@@ -1,0 +1,15 @@
+/Users/jules.grinnell/MyApps/oemLeads/bin/Debug/net7.0/oemLeads
+/Users/jules.grinnell/MyApps/oemLeads/bin/Debug/net7.0/oemLeads.deps.json
+/Users/jules.grinnell/MyApps/oemLeads/bin/Debug/net7.0/oemLeads.runtimeconfig.json
+/Users/jules.grinnell/MyApps/oemLeads/bin/Debug/net7.0/oemLeads.dll
+/Users/jules.grinnell/MyApps/oemLeads/bin/Debug/net7.0/oemLeads.pdb
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.csproj.AssemblyReference.cache
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.GeneratedMSBuildEditorConfig.editorconfig
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.AssemblyInfoInputs.cache
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.AssemblyInfo.cs
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.csproj.CoreCompileInputs.cache
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.dll
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/refint/oemLeads.dll
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.pdb
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/oemLeads.genruntimeconfig.cache
+/Users/jules.grinnell/MyApps/oemLeads/obj/Debug/net7.0/ref/oemLeads.dll

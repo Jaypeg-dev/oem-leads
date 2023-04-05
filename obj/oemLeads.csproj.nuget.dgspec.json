@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/Users/jules.grinnell/MyApps/oemLeads/oemLeads.csproj": {}
+    "C:\\Users\\osmans\\source\\repos\\DaemonKingslayer\\oem-leads\\oemLeads.csproj": {}
   },
   "projects": {
-    "/Users/jules.grinnell/MyApps/oemLeads/oemLeads.csproj": {
+    "C:\\Users\\osmans\\source\\repos\\DaemonKingslayer\\oem-leads\\oemLeads.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/jules.grinnell/MyApps/oemLeads/oemLeads.csproj",
+        "projectUniqueName": "C:\\Users\\osmans\\source\\repos\\DaemonKingslayer\\oem-leads\\oemLeads.csproj",
         "projectName": "oemLeads",
-        "projectPath": "/Users/jules.grinnell/MyApps/oemLeads/oemLeads.csproj",
-        "packagesPath": "/Users/jules.grinnell/.nuget/packages/",
-        "outputPath": "/Users/jules.grinnell/MyApps/oemLeads/obj/",
+        "projectPath": "C:\\Users\\osmans\\source\\repos\\DaemonKingslayer\\oem-leads\\oemLeads.csproj",
+        "packagesPath": "C:\\Users\\osmans\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\osmans\\source\\repos\\DaemonKingslayer\\oem-leads\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/jules.grinnell/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\osmans\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -53,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.201/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
         }
       }
     }

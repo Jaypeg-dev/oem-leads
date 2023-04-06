@@ -24,7 +24,7 @@ namespace oemLeads.Commands.Models
         public string? StreetName { get; set; }
 
         [JsonPropertyName("houseNumber")]
-        public int? HouseNumber { get; set; }
+        public string? HouseNumber { get; set; }
 
         [JsonPropertyName("postalCode")]
         public string? PostalCode { get; set; }

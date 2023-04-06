@@ -96,7 +96,7 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilGetServiceLeads(JsonElement RwilToken, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
-            var bTesting = false;
+            var bTesting = true;
             string sResponse;
 
             while (!bResultLoop)
@@ -123,6 +123,7 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilReadLeads(string RwilLeadjsonString, JsonElement RwilToken, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
+            var bLeadProcessFail = false;
 
             while (!bResultLoop)
             {
@@ -138,10 +139,12 @@ namespace RwillLeadAdaptorBuildV2
                     // Routine to process each lead
                     if (!RwilProcessLead(Leads.ToString(), RwilToken, KeyloopToken))
                     {
+                        bLeadProcessFail = true;
                         bResultLoop = false;
                         break;
                     }
                 }
+                if (bLeadProcessFail) break;
             }
 
             return bResultLoop;
@@ -304,7 +307,7 @@ namespace RwillLeadAdaptorBuildV2
                         Address = new Address()
                         {
                             StreetName = $"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.Street}",
-                            HouseNumber = int.Parse($"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.HouseNumber}"),
+                            HouseNumber = $"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.HouseNumber}",
                             PostalCode = $"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.PostalCode}",
                             City = $"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.City}",
                             County = $"{RwilLead?.Payload?.AdditionalServiceLeadInformation?.CustomerAddress?.Country}",
@@ -638,7 +641,7 @@ namespace RwillLeadAdaptorBuildV2
                     Offsets = new List<OffsetC>(),
                 };
 
-                var rwiloffset = new OffsetC { BoType = "", Offset = (RwilLead?.Header?.Offset + 1) };
+                var rwiloffset = new OffsetC { BoType = "serviceLead", Offset = (RwilLead?.Header?.Offset + 1) };
                 rwilloffsetcommit.Offsets.Add(rwiloffset);
                 RwilOffsetJsonString = JsonSerializer.Serialize(rwilloffsetcommit);
 
@@ -733,6 +736,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }
@@ -760,6 +765,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }
@@ -786,6 +793,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }
@@ -813,7 +822,9 @@ namespace RwillLeadAdaptorBuildV2
             {
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                Console.WriteLine("\nMessage :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }
@@ -842,6 +853,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
                 // return response.ToString();
@@ -870,6 +883,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
                 // return response.ToString();
@@ -901,6 +916,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }
@@ -915,7 +932,7 @@ namespace RwillLeadAdaptorBuildV2
             request.Content = content;
             var response = await client.SendAsync(request);
             Console.WriteLine(response);
-
+            
             try
             {
                 //  Block of code to try
@@ -928,7 +945,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
-
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
                 return "-1";
             }
         }
@@ -955,6 +973,8 @@ namespace RwillLeadAdaptorBuildV2
                 //  Block of code to handle errors
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
 
                 return "-1";
             }

@@ -96,7 +96,7 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilGetServiceLeads(JsonElement RwilToken, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
-            var bTesting = true;
+            var bTesting = false;
             string sResponse;
 
             while (!bResultLoop)

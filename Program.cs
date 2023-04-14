@@ -27,6 +27,7 @@ namespace RwillLeadAdaptorBuildV2
                 if (!KeyloopGatewayOAuth(ref Keyloop_Token)) break;
                 if (!RwilGetServiceLeads(RwilAccess_Token, Keyloop_Token)) break;
                 // Only a single loop so we can break when we dont want to continue and return result
+                // TODO Next routine to know use the database and perform T4 T5 T6 T7 updates to Rwil using repair order
                 bResultLoop = true;
             }
 
@@ -96,7 +97,7 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilGetServiceLeads(JsonElement RwilToken, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
-            var bTesting = false;
+            var bTesting = false  ;
             string sResponse;
 
             while (!bResultLoop)
@@ -124,7 +125,13 @@ namespace RwillLeadAdaptorBuildV2
         {
             var bResultLoop = false;
             var bLeadProcessFail = false;
-
+            string SABAppID = "", path = @"C:\Kerridge\DataBase.txt";
+            string? GedaiServiceLeadID = "";
+            // TODO This needs to be replaced with database model check if (file doesnt exist create it)
+            if (!File.Exists(path))
+            {
+                using StreamWriter sw = File.CreateText(path);
+            }
             while (!bResultLoop)
             {
                 using var RwilLeads = JsonDocument.Parse(RwilLeadjsonString);
@@ -137,12 +144,15 @@ namespace RwillLeadAdaptorBuildV2
                 foreach (JsonElement Leads in RwilLeadsRoot.EnumerateArray())
                 {
                     // Routine to process each lead
-                    if (!RwilProcessLead(Leads.ToString(), RwilToken, KeyloopToken))
+                    if (!RwilProcessLead(Leads.ToString(), RwilToken, KeyloopToken, ref SABAppID, ref GedaiServiceLeadID))
                     {
                         bLeadProcessFail = true;
                         bResultLoop = false;
                         break;
                     }
+                    // TODO Replace with database write
+                    using StreamWriter sw = File.AppendText(path);
+                    sw.WriteLine(GedaiServiceLeadID + "," + SABAppID + ",T4");
                 }
                 if (bLeadProcessFail) break;
             }
@@ -150,16 +160,17 @@ namespace RwillLeadAdaptorBuildV2
             return bResultLoop;
         }
 
-        public static bool RwilProcessLead(string RwilJasonSingleLead, JsonElement RwilToken, JsonElement KeyloopToken)
+        public static bool RwilProcessLead(string RwilJasonSingleLead, JsonElement RwilToken, JsonElement KeyloopToken, ref string SABAppID, ref string? GedaiServiceLeadID)
         {
             var bResultLoop = false;
             var RwilLead = JsonSerializer.Deserialize<RwilSingleLead>(RwilJasonSingleLead);
-            var SABAppID = "";
 
             while (!bResultLoop)
             {
                 Console.WriteLine("");
                 Console.WriteLine("Start Processing Lead");
+                // Set the gedai service lead ID
+                GedaiServiceLeadID = RwilLead?.Payload?.ServiceLeadRecordID;
                 // SAB Method
                 Console.WriteLine("");
                 if (!RwilProcessLead_SAB(RwilLead, ref SABAppID, KeyloopToken)) break;
@@ -216,7 +227,7 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilProcessLead_SABRequest_Build(RwilSingleLead? RwilLead, ref string SABReqJsonString)
         {
             var bResultLoop = false;
-            string RWFirstName = "", RWLastName = "", RWPhone = "", RWEmail = "", RWEngineCode = "", RWModelCode = "", RWOdoMeterUnitMeasure = "", RWMileage = "";
+            string RWFirstName = "", RWLastName = "", RWPhone = "", RWEmail = "", RWEngineCode = "", RWModelCode = "", RWOdoMeterUnitMeasure = "", RWMileage = "0";
 
             while (!bResultLoop)
             {
@@ -851,7 +862,7 @@ namespace RwillLeadAdaptorBuildV2
             catch (HttpRequestException e)
             {
                 //  Block of code to handle errors
-                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("\nException Caught! on SAB Request");
                 Console.WriteLine("Message :{0} ", e.Message);
                 var errorresponse = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"\n{errorresponse}");

@@ -198,16 +198,16 @@ namespace oemLeads.Commands.Models
         public string? AppointmentId { get; set; }
 
         [JsonPropertyName("details")]
-        public Details? Details { get; set; }
+        public DetailsSABRes? Details { get; set; }
 
         [JsonPropertyName("customer")]
-        public Customer? Customer { get; set; }
+        public CustomerSABRes? Customer { get; set; }
 
         [JsonPropertyName("vehicle")]
-        public Vehicle? Vehicle { get; set; }
+        public VehicleSABRes? Vehicle { get; set; }
 
         [JsonPropertyName("bookingOption")]
-        public BookingOption? BookingOption { get; set; }
+        public BookingOptionSABRes? BookingOption { get; set; }
 
         [JsonPropertyName("serviceProducts")]
         public List<ServiceProductSABRes>? ServiceProducts { get; set; }
@@ -660,13 +660,13 @@ namespace oemLeads.Commands.Models
         public object? Description { get; set; }
 
         [JsonPropertyName("identification")]
-        public Identification? Identification { get; set; }
+        public IdentificationSABRes? Identification { get; set; }
 
         [JsonPropertyName("referenceData")]
         public ReferenceDataSABRes? ReferenceData { get; set; }
 
         [JsonPropertyName("mileage")]
-        public Mileage? Mileage { get; set; }
+        public MileageSABRes? Mileage { get; set; }
     }
 
 }

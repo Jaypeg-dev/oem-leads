@@ -488,4 +488,28 @@ namespace oemLeads.Commands.Models
         public DateTime? Timestamp { get; set; }
     }
 
+    // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
+    public class T4Event
+    {
+        [JsonPropertyName("eventType")]
+        public string EventType { get; set; }
+
+        [JsonPropertyName("serviceLeadRecordID")]
+        public string ServiceLeadRecordID { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public DateTime? Timestamp { get; set; }
+
+        [JsonPropertyName("customerContactChannel")]
+        public string CustomerContactChannel { get; set; }
+    }
+
+    public class RwilT4
+    {
+        [JsonPropertyName("event")]
+        public T4Event Event { get; set; }
+    }
+
+
+
 }

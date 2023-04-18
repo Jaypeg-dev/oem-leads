@@ -20,7 +20,7 @@ namespace RwillLeadAdaptorBuildV2
 
             while (!bResultLoop)
             {
-                // Start by processing Rwil Leads
+                // Start by processing Rwil Leads 
                 if (!RwilProcessLead(ref RwilAccess_Token,ref Keyloop_Token)) break;
                 // Next routine to now use the database and perform T4 T5 T6 T7 updates to Rwil using repair order 
                 if (!RwilUpdateLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
@@ -49,13 +49,13 @@ namespace RwillLeadAdaptorBuildV2
         public static bool RwilUpdateLead(ref JsonElement RwilAccess_Token, ref JsonElement Keyloop_Token)
         {
             bool bResultLoop = false;
-            string path = @"C:\Kerridge\", filename = "DataBase.txt", updatefile = "DataBaseUpdate.txt", backUpOfFile = "DataBaseUpdate.txt.bk";
+            string path = @"C:\Kerridge\", filename = "DataBase.txt", updatefile = "DataBaseUpdate.txt";
 
             while (!bResultLoop)
             {
                 if (!RwilUpdateLeadQuery.RwilUpdated_ReadUpdateLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
                 // This would fall out when platform database is added this is temp to update current info
-                if (!RwilUpdateLeadQuery.Rwil_CheckReplaceDataFile(path + filename, path + updatefile, path + backUpOfFile)) break;
+                if (!RwilUpdateLeadQuery.Rwil_CheckReplaceDataFile(path + filename, path + updatefile)) break;
                 bResultLoop = true;
             }
 

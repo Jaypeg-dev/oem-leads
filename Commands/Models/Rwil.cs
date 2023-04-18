@@ -14,7 +14,7 @@ namespace oemLeads.Commands.Models
         public CustomerAddress? CustomerAddress { get; set; }
 
         [JsonPropertyName("customerDesiredDate")]
-        public DateTime? CustomerDesiredDate { get; set; }
+        public string CustomerDesiredDate { get; set; }
 
         [JsonPropertyName("dataPrivacyApproval")]
         public string? DataPrivacyApproval { get; set; }
@@ -158,13 +158,13 @@ namespace oemLeads.Commands.Models
     public class Escalation
     {
         [JsonPropertyName("escalationV1")]
-        public DateTime? EscalationV1 { get; set; }
+        public string EscalationV1 { get; set; }
 
         [JsonPropertyName("escalationV2")]
-        public DateTime? EscalationV2 { get; set; }
+        public string EscalationV2 { get; set; }
 
         [JsonPropertyName("escalationV3")]
-        public DateTime? EscalationV3 { get; set; }
+        public string EscalationV3 { get; set; }
     }
 
     public class Header
@@ -185,7 +185,7 @@ namespace oemLeads.Commands.Models
         public string? Source { get; set; }
 
         [JsonPropertyName("created")]
-        public DateTime? Created { get; set; }
+        public string Created { get; set; }
 
         [JsonPropertyName("messageId")]
         public string? MessageId { get; set; }
@@ -203,7 +203,7 @@ namespace oemLeads.Commands.Models
         public string? Actuation { get; set; }
 
         [JsonPropertyName("creationTimestamp")]
-        public DateTime? CreationTimestamp { get; set; }
+        public string CreationTimestamp { get; set; }
 
         [JsonPropertyName("odometerValue")]
         public long? OdometerValue { get; set; }
@@ -293,13 +293,13 @@ namespace oemLeads.Commands.Models
         public string? SecondStage { get; set; }
 
         [JsonPropertyName("secondStageTime")]
-        public DateTime? SecondStageTime { get; set; }
+        public string SecondStageTime { get; set; }
 
         [JsonPropertyName("thirdStage")]
         public string? ThirdStage { get; set; }
 
         [JsonPropertyName("thirdStageTime")]
-        public DateTime? ThirdStageTime { get; set; }
+        public string ThirdStageTime { get; set; }
     }
 
     public class ProcessValues
@@ -363,16 +363,16 @@ namespace oemLeads.Commands.Models
     public class TimeAllowance
     {
         [JsonPropertyName("T0")]
-        public DateTime? T0 { get; set; }
+        public string T0 { get; set; }
 
         [JsonPropertyName("targetT3")]
-        public DateTime? TargetT3 { get; set; }
+        public string TargetT3 { get; set; }
 
         [JsonPropertyName("targetT4")]
-        public DateTime? TargetT4 { get; set; }
+        public string TargetT4 { get; set; }
 
         [JsonPropertyName("targetT5")]
-        public DateTime? TargetT5 { get; set; }
+        public string TargetT5 { get; set; }
     }
 
     public class TransmissionCodeC
@@ -485,7 +485,7 @@ namespace oemLeads.Commands.Models
         public string? ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public DateTime? Timestamp { get; set; }
+        public string Timestamp { get; set; }
     }
 
     // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
@@ -498,7 +498,7 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public DateTime? Timestamp { get; set; }
+        public string Timestamp { get; set; }
 
         [JsonPropertyName("customerContactChannel")]
         public string CustomerContactChannel { get; set; }
@@ -510,6 +510,127 @@ namespace oemLeads.Commands.Models
         public T4Event Event { get; set; }
     }
 
+    // T5A_RwilT5A myDeserializedClass = JsonSerializer.Deserialize<T5A_RwilT5A>(myJsonResponse);
+    public class T5A_Event
+    {
+        [JsonPropertyName("eventType")]
+        public string EventType { get; set; }
 
+        [JsonPropertyName("serviceLeadRecordID")]
+        public string ServiceLeadRecordID { get; set; }
 
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+
+        [JsonPropertyName("customerContactChannel")]
+        public string CustomerContactChannel { get; set; }
+
+        [JsonPropertyName("appointmentDate")]
+        public string AppointmentDate { get; set; }
+
+        [JsonPropertyName("serviceAdvisor")]
+        public T5A_ServiceAdvisor ServiceAdvisor { get; set; }
+
+        [JsonPropertyName("optionalText")]
+        public string OptionalText { get; set; }
+    }
+
+    public class T5A_RwilT5A
+    {
+        [JsonPropertyName("event")]
+        public T5A_Event Event { get; set; }
+    }
+
+    public class T5A_ServiceAdvisor
+    {
+        [JsonPropertyName("emailAdress")]
+        public string EmailAdress { get; set; }
+
+        [JsonPropertyName("telephoneNumber")]
+        public string TelephoneNumber { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("orgGroup")]
+        public string OrgGroup { get; set; }
+    }
+
+    // T5C_RwilT5C myDeserializedClass = JsonSerializer.Deserialize<T5C_RwilT5C>(myJsonResponse);
+    public class T5C_Event
+    {
+        [JsonPropertyName("eventType")]
+        public string EventType { get; set; }
+
+        [JsonPropertyName("rejectionCode")]
+        public string RejectionCode { get; set; }
+
+        [JsonPropertyName("serviceLeadRecordID")]
+        public string ServiceLeadRecordID { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+
+        [JsonPropertyName("customerContactChannel")]
+        public string CustomerContactChannel { get; set; }
+
+        [JsonPropertyName("additionalReason")]
+        public string AdditionalReason { get; set; }
+
+        [JsonPropertyName("optionalText")]
+        public string OptionalText { get; set; }
+    }
+
+    public class T5C_RwilT5C
+    {
+        [JsonPropertyName("event")]
+        public T5C_Event Event { get; set; }
+    }
+
+    // T6_RwilT6 myDeserializedClass = JsonSerializer.Deserialize<T6_RwilT6>(myJsonResponse);
+    public class T6_Event
+    {
+        [JsonPropertyName("eventType")]
+        public string EventType { get; set; }
+
+        [JsonPropertyName("serviceLeadRecordID")]
+        public string ServiceLeadRecordID { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+
+        [JsonPropertyName("appointmentDate")]
+        public string AppointmentDate { get; set; }
+
+        [JsonPropertyName("optionalText")]
+        public string OptionalText { get; set; }
+    }
+
+    public class T6_RwilT6
+    {
+        [JsonPropertyName("event")]
+        public T6_Event Event { get; set; }
+    }
+
+    // T7_RwilT7 myDeserializedClass = JsonSerializer.Deserialize<T7_RwilT7>(myJsonResponse);
+    public class T7_Event
+    {
+        [JsonPropertyName("eventType")]
+        public string EventType { get; set; }
+
+        [JsonPropertyName("serviceLeadRecordID")]
+        public string ServiceLeadRecordID { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+
+        [JsonPropertyName("optionalText")]
+        public string OptionalText { get; set; }
+    }
+
+    public class T7_RwilT7
+    {
+        [JsonPropertyName("event")]
+        public T7_Event Event { get; set; }
+    }
 }

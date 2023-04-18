@@ -74,8 +74,8 @@ namespace oemLeads.Queries
         public static async Task<string> KeyloopGatewayOAuthAsync()
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.eu-stage.keyloop.io/oauth/client_credential/accesstoken");
-            var content = new StringContent("grant_type=client_credentials&client_id=l6IMyG2XJvAB6PjyBDt8peRkt8AExjvV&client_secret=GhRrgL3jZJATzaHj", null, "application/x-www-form-urlencoded");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.af-stage.keyloop.io/oauth/client_credential/accesstoken");
+            var content = new StringContent("grant_type=client_credentials&client_id=QZusCMlg42fU7m50CSg9AIAxI0G7yTpd&client_secret=AAtmfq1YLH1HugHs", null, "application/x-www-form-urlencoded");
             request.Content = content;
             var response = await client.SendAsync(request);
             Console.WriteLine(response);
@@ -132,7 +132,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_SABAsync(JsonElement KeyloopAccess_Token, string SABRequest)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.eu-stage.keyloop.io/appointment/31905/44005860/v1/appointments");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.af-stage.keyloop.io/appointment/31981/44014796-BR0001/v1/appointments");
             request.Headers.Add("Accept-Language", "ar");
             request.Headers.Add("Authorization", "Bearer " + KeyloopAccess_Token);
             var content = new StringContent(SABRequest, null, "application/json");

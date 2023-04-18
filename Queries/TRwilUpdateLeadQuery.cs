@@ -34,7 +34,7 @@ namespace oemLeads.Queries
                 return "-1";
             }
         }
-        public static async Task<string> RwilUpdateLead_RwilT4Async(JsonElement RwilToken, string RwilT4Request)
+        public static async Task<string> RwilUpdateLead_RwilTUpdateAsync(JsonElement RwilToken, string RwilT4Request)
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/producers/retail/ZAF996-Autoline-DRIVE-DMS-Q/ZAF09002V/serviceleadstatusupdate/created");
@@ -54,7 +54,7 @@ namespace oemLeads.Queries
             catch (HttpRequestException e)
             {
                 //  Block of code to handle errors
-                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("\nException Caught in Rwil T Update!");
                 Console.WriteLine("Message :{0} ", e.Message);
                 var errorresponse = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"\n{errorresponse}");

@@ -88,10 +88,10 @@ namespace oemLeads.Commands.Models
         public string? ExternalReference { get; set; }
 
         [JsonPropertyName("dueInDateTime")]
-        public DateTime? DueInDateTime { get; set; }
+        public string DueInDateTime { get; set; }
 
         [JsonPropertyName("dueOutDateTime")]
-        public DateTime? DueOutDateTime { get; set; }
+        public string DueOutDateTime { get; set; }
 
         [JsonPropertyName("advisorRequired")]
         public bool? AdvisorRequired { get; set; }
@@ -447,10 +447,10 @@ namespace oemLeads.Commands.Models
         public string? CustomerNotes { get; set; }
 
         [JsonPropertyName("dueInDateTime")]
-        public DateTime? DueInDateTime { get; set; }
+        public string DueInDateTime { get; set; }
 
         [JsonPropertyName("dueOutDateTime")]
-        public DateTime? DueOutDateTime { get; set; }
+        public string DueOutDateTime { get; set; }
 
         [JsonPropertyName("contactAdvisor")]
         public ContactAdvisorSABRes? ContactAdvisor { get; set; }

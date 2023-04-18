@@ -19,10 +19,10 @@ namespace oemLeads.Commands.Models
             public RORBookingOptions BookingOptions { get; set; }
 
             [JsonPropertyName("dueInDateTime")]
-            public DateTime? DueInDateTime { get; set; }
+            public string DueInDateTime { get; set; }
 
             [JsonPropertyName("dueOutDateTime")]
-            public DateTime? DueOutDateTime { get; set; }
+            public string DueOutDateTime { get; set; }
 
             [JsonPropertyName("customerWaiting")]
             public bool? CustomerWaiting { get; set; }
@@ -130,16 +130,16 @@ namespace oemLeads.Commands.Models
             public string Notes { get; set; }
 
             [JsonPropertyName("checkInDateTime")]
-            public DateTime? CheckInDateTime { get; set; }
+            public string CheckInDateTime { get; set; }
 
             [JsonPropertyName("checkOutDateTime")]
-            public DateTime? CheckOutDateTime { get; set; }
+            public string CheckOutDateTime { get; set; }
 
             [JsonPropertyName("completedDateTime")]
-            public DateTime? CompletedDateTime { get; set; }
+            public string CompletedDateTime { get; set; }
 
             [JsonPropertyName("closedDateTime")]
-            public DateTime? ClosedDateTime { get; set; }
+            public string ClosedDateTime { get; set; }
 
             [JsonPropertyName("checkInMileage")]
             public RORCheckInMileage CheckInMileage { get; set; }
@@ -226,10 +226,10 @@ namespace oemLeads.Commands.Models
             public List<string> ServiceTypes { get; set; }
 
             [JsonPropertyName("workStartedDateTime")]
-            public DateTime? WorkStartedDateTime { get; set; }
+            public string WorkStartedDateTime { get; set; }
 
             [JsonPropertyName("workCompletedDateTime")]
-            public DateTime? WorkCompletedDateTime { get; set; }
+            public string WorkCompletedDateTime { get; set; }
 
             [JsonPropertyName("linkReference")]
             public string LinkReference { get; set; }
@@ -484,10 +484,10 @@ namespace oemLeads.Commands.Models
         public class RORPlanning
         {
             [JsonPropertyName("plannedIn")]
-            public DateTime? PlannedIn { get; set; }
+            public string PlannedIn { get; set; }
 
             [JsonPropertyName("plannedOut")]
-            public DateTime? PlannedOut { get; set; }
+            public string PlannedOut { get; set; }
         }
 
         public class RORReferenceData
@@ -529,13 +529,13 @@ namespace oemLeads.Commands.Models
             public string Type { get; set; }
 
             [JsonPropertyName("details")]
-            public Details Details { get; set; }
+            public RORDetails Details { get; set; }
 
             [JsonPropertyName("vehicle")]
-            public Vehicle Vehicle { get; set; }
+            public RORVehicle Vehicle { get; set; }
 
             [JsonPropertyName("customer")]
-            public Customer Customer { get; set; }
+            public RORCustomer Customer { get; set; }
 
             [JsonPropertyName("company")]
             public RORCompany Company { get; set; }
@@ -598,19 +598,19 @@ namespace oemLeads.Commands.Models
         public class RORUpdateHistory
         {
             [JsonPropertyName("created")]
-            public DateTime? Created { get; set; }
+            public string Created { get; set; }
 
             [JsonPropertyName("lastModified")]
-            public DateTime? LastModified { get; set; }
+            public string LastModified { get; set; }
         }
 
         public class RORUpdateHistoryEnd
         {
             [JsonPropertyName("created")]
-            public DateTime? Created { get; set; }
+            public string Created { get; set; }
 
             [JsonPropertyName("lastModified")]
-            public DateTime? LastModified { get; set; }
+            public string LastModified { get; set; }
 
             [JsonPropertyName("updateHistory")]
             public RORUpdateHistory UpdateHistory { get; set; }

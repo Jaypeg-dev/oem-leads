@@ -206,7 +206,6 @@ namespace oemLeads.Queries
                 // Perform a single loop to reduce process and store info in variables
                 if (RwilLead?.Payload?.BusinessPartners is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var BPCustomer in RwilLead?.Payload?.BusinessPartners)
                     {
                         RWFirstName = $"{BPCustomer?.FirstName}";
@@ -230,30 +229,22 @@ namespace oemLeads.Queries
                             }
                         }
                     }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 if (RwilLead?.Payload?.Vehicle?.ModelCodes is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var MCodes in RwilLead?.Payload?.Vehicle?.ModelCodes)
                         RWModelCode = $"{MCodes?.ModelCode}";
-
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 if (RwilLead?.Payload?.Vehicle?.EngineCodes is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var ECodes in RwilLead?.Payload?.Vehicle?.EngineCodes)
                         RWEngineCode = $"{ECodes?.EngineCode}";
-
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 if (RwilLead?.Payload?.ListOfVehicleStatus is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var LVStatus in RwilLead?.Payload?.ListOfVehicleStatus)
                     {
                         RWMileage = $"{LVStatus?.OdometerValue}";
@@ -265,7 +256,6 @@ namespace oemLeads.Queries
                             _ => $"{LVStatus?.OdometerValueUnit}",
                         };
                     }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 var sabrequest = new SABRequest()
@@ -273,8 +263,8 @@ namespace oemLeads.Queries
                     Details = new Details()
                     {
                         ExternalReference = "RWil Appoint Book",
-                        DueInDateTime = DateTime.Now,
-                        DueOutDateTime = DateTime.Now,
+                        DueInDateTime = RwilProcessLead_CurrentDateTime(),
+                        DueOutDateTime = RwilProcessLead_CurrentDateTime(),
                         AdvisorRequired = false,
                         ContactAdvisorId = "",
                     },
@@ -333,7 +323,7 @@ namespace oemLeads.Queries
                         AuditData = new AuditData()
                         {
                             // Need to consider parametizing this user ID 
-                            UserId = "api",
+                            UserId = "apiuser",
                             UserName = "API Default User",
                         },
                     },
@@ -438,7 +428,6 @@ namespace oemLeads.Queries
                 // Perform a single loop to reduce process and store info in variables
                 if (RwilLead?.Payload?.BusinessPartners is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var BPCustomer in RwilLead?.Payload?.BusinessPartners)
                     {
                         RWFirstName = $"{BPCustomer?.FirstName}";
@@ -462,21 +451,16 @@ namespace oemLeads.Queries
                             }
                         }
                     }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 if (RwilLead?.Payload?.Vehicle?.ModelCodes is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var MCodes in RwilLead?.Payload?.Vehicle?.ModelCodes)
                         RWModelCode = $"{MCodes?.ModelCode}";
-
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 if (RwilLead?.Payload?.ListOfVehicleStatus is not null)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     foreach (var LVStatus in RwilLead?.Payload?.ListOfVehicleStatus)
                     {
                         RWTrans = $"{LVStatus?.Actuation}";
@@ -489,7 +473,6 @@ namespace oemLeads.Queries
                             _ => $"{LVStatus?.OdometerValueUnit}",
                         };
                     }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 // RTC Logic to build the RTC Lead using Rwil and SAB Response
@@ -567,7 +550,7 @@ namespace oemLeads.Queries
                 };
 
                 rtckeyloopleadreq.Vehicles.Add(vehiclertc);
-                var appointmentrtc = new AppointmentRTC { AppointmentTypeId = "Service", AppointmentDateTime = DateTime.Now, AlternateAppointmentDateTime = DateTime.Now, Comments = $"Appointment ID: {SABAppID}" };
+                var appointmentrtc = new AppointmentRTC { AppointmentTypeId = "Service", AppointmentDateTime = RwilProcessLead_CurrentDateTime(), AlternateAppointmentDateTime = RwilProcessLead_CurrentDateTime(), Comments = $"Appointment ID: {SABAppID}" };
                 rtckeyloopleadreq.Appointments.Add(appointmentrtc);
 
                 var leadpropertyvaluertc = new LeadPropertyValueRTC
@@ -667,7 +650,7 @@ namespace oemLeads.Queries
                     {
                         EventType = "T3",
                         ServiceLeadRecordID = RwilLead?.Payload?.ServiceLeadRecordID,
-                        Timestamp = DateTime.Now,
+                        Timestamp = RwilProcessLead_CurrentDateTime(),
                     },
                 };
 
@@ -678,5 +661,10 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
+        public static string RwilProcessLead_CurrentDateTime()
+        {
+            DateTime dt1 = DateTime.Now;
+            return dt1.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+        }
     }
 }

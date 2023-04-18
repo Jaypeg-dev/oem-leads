@@ -12,7 +12,7 @@ namespace oemLeads.Commands.Models
     public class RTCKeyloopLeadReq
     {
         [JsonPropertyName("eventDate")]
-        public DateTime? EventDate { get; set; }
+        public string EventDate { get; set; }
 
         [JsonPropertyName("salutation")]
         public object? Salutation { get; set; }
@@ -66,10 +66,10 @@ namespace oemLeads.Commands.Models
         public string? AppointmentTypeId { get; set; }
 
         [JsonPropertyName("appointmentDateTime")]
-        public DateTime? AppointmentDateTime { get; set; }
+        public string AppointmentDateTime { get; set; }
 
         [JsonPropertyName("alternateAppointmentDateTime")]
-        public DateTime? AlternateAppointmentDateTime { get; set; }
+        public string AlternateAppointmentDateTime { get; set; }
 
         [JsonPropertyName("comments")]
         public string? Comments { get; set; }

@@ -1,0 +1,214 @@
+[
+  {
+    "header": {
+      "wholesalerKey": "",
+      "partnerKey": "ZAF09002V",
+      "businessObjectType": "serviceLead",
+      "eventType": "created",
+      "source": "Product_SLI_QA",
+      "created": "2023-04-11T08:54:00.299593202Z",
+      "messageId": "ffb0a5fb-cb62-4998-a442-b6c65cd2e65b",
+      "relatesTo": "",
+      "offset": 80
+    },
+    "payload": {
+      "additionalServiceLeadInformation": {
+        "customerAddress": {
+          "additional": "Additional",
+          "city": "Johannesburg",
+          "country": "ZAF",
+          "houseNumber": "584",
+          "postalCode": "3831SV",
+          "state": "Region",
+          "street": "Burnice Mews"
+        },
+        "customerDesiredDate": "2023-03-29T10:00:00.000Z",
+        "dataPrivacyApproval": "Full Marketing Consent",
+        "fleetVehicle": "CARIAD FLEET",
+        "licensePlate": "EZ849RZ",
+        "mot": "01.07.2023",
+        "replacementMobility": [
+          {
+            "languageKey": "",
+            "replacementReferenceCode": "MOB1",
+            "replacementText": "Courtesy Car"
+          },
+          {
+            "languageKey": "",
+            "replacementReferenceCode": "MOB2",
+            "replacementText": "E-Bike"
+          }
+        ],
+        "serviceScope": [
+          {
+            "languageKey": "en",
+            "serviceReferenceCode": "Paket1",
+            "serviceText": "ZAF Testing Lead"
+          },
+          {
+            "languageKey": "en",
+            "serviceReferenceCode": "Paket2",
+            "serviceText": "ZAF Testing Lead"
+          },
+          {
+            "languageKey": "en",
+            "serviceReferenceCode": "Paket3",
+            "serviceText": "Car Wash"
+          }
+        ],
+        "shoppingCardID": "https://cariad.technology/",
+        "specifications": [
+          {
+            "specification": "ivory 3.9.9"
+          },
+          {
+            "specification": "white Tactics Baht e-services New 11"
+          }
+        ]
+      },
+      "businessPartners": [
+        {
+          "academicTitle": "Mr.",
+          "applicationIdentifiers": [
+            {
+              "ID": "0123456",
+              "schemeID": "local"
+            }
+          ],
+          "communicationChannels": [
+            {
+              "channelType": "Phone",
+              "channelValue": "0682865120"
+            },
+            {
+              "channelType": "Email",
+              "channelValue": "jules.grinnell@keyloop.com"
+            }
+          ],
+          "firstName": "Jules",
+          "lastName": "Grinnell",
+          "middleName": " ",
+          "partnerKey": {
+            "brand": "V",
+            "countryImporter": "ZAF",
+            "partnerNumber": "09010"
+          },
+          "partnerKind": "Person",
+          "salutation": "Mr.",
+          "wholesalerKey": {
+            "brand": "V",
+            "wholesalerNumber": "996"
+          }
+        }
+      ],
+      "customerServiceRequest": {
+        "applicationIdentifiers": [
+          {
+            "ID": "CustomerID811",
+            "schemeID": "LeadSourceXY"
+          }
+        ],
+        "channelType": "Phone",
+        "customerServiceRequestUID": "146e196c-3ae2-40fa-b41a-3e7c6cfb830d",
+        "maturity": "2023-05-01 12:00:08.645+02:00",
+        "partnerKey": {
+          "brand": "V",
+          "countryImporter": "ZAF",
+          "partnerNumber": "09002"
+        },
+        "requestCreatingSystem": "ICTO-Postman_Tig",
+        "requestType": "OTV.SVC",
+        "shortDescription": "ZAF: We àre t`esting hére diffent type of notations \r\n aswell as the \"JSON Format Notation\" & “Unicode Notation”",
+        "spreadAppointmentIND": "true",
+        "vehicleStatusRef": [
+          {
+            "vehicleStatusUID": "7d614524-1a78-417c-b70a-208f4cf8557d"
+          }
+        ]
+      },
+      "listOfVehicleStatus": [
+        {
+          "actuation": "OTVManual",
+          "creationTimestamp": "2023-03-22T16:00:40.000Z",
+          "odometerValue": 127560,
+          "odometerValueUnit": "km",
+          "vehicleStatusUID": "7d614524-1a78-417c-b70a-208f4cf8557d"
+        }
+      ],
+      "processValues": {
+        "escalation": {
+          "escalationV1": "2023-04-14T08:53:58+00:00",
+          "escalationV2": "2023-04-16T08:53:58+00:00",
+          "escalationV3": "2023-04-21T08:53:58+00:00"
+        },
+        "priority": {
+          "initStage": "cold",
+          "secondStage": "warm",
+          "secondStageTime": "2023-04-15T08:53:58+00:00",
+          "thirdStage": "hot",
+          "thirdStageTime": "2023-04-18T08:53:58+00:00"
+        },
+        "reminder": {},
+        "timeAllowance": {
+          "T0": "2023-04-11T08:53:58+00:00",
+          "targetT3": "2023-04-14T08:53:58+00:00",
+          "targetT4": "2023-04-16T08:53:58+00:00",
+          "targetT5": "2023-04-21T08:53:58+00:00"
+        }
+      },
+      "region": "996",
+      "serviceLeadRecordID": "5007Y00000OvdiSQAR",
+      "vehicle": {
+        "brand": "V",
+        "engineCodes": [
+          {
+            "engineCode": "ABC_Engine"
+          }
+        ],
+        "modelCodes": [
+          {
+            "modelCode": "ABC123_Model"
+          }
+        ],
+        "modelName": "Random Car",
+        "modelYear": 2021,
+        "transmissionCodes": [
+          {
+            "transmissionCode": "XYZ_Gear"
+          }
+        ],
+        "vin": "WVWZZZXYZ11481003"
+      },
+      "vehicleMaintenanceInformation": {
+        "maintenanceEvents": [
+          {
+            "distance": 358,
+            "distanceUnit": "km",
+            "maintenanceEventType": "InspectionDistance",
+            "maintenanceStatus": "2"
+          },
+          {
+            "days": 63,
+            "distanceUnit": "",
+            "maintenanceEventType": "InspectionTime",
+            "maintenanceStatus": "2"
+          },
+          {
+            "distance": 2569,
+            "distanceUnit": "km",
+            "maintenanceEventType": "OilDistance",
+            "maintenanceStatus": "2"
+          },
+          {
+            "days": 69,
+            "distanceUnit": "",
+            "maintenanceEventType": "OilTime",
+            "maintenanceStatus": "2"
+          }
+        ],
+        "warningLightPriority": "White"
+      },
+      "wholesalerNumber": "ZAF996V"
+    }
+  }
+]

@@ -98,7 +98,8 @@ namespace oemLeads.Queries
             var bResultLoop = false;
             var bLeadProcessFail = false;
             string SABAppID = "", path = @"C:\Kerridge\DataBase.txt";
-            string? GedaiServiceLeadID = "";
+            string GedaiServiceLeadID = "";
+            string sAppDate = "";
             // TODO This needs to be replaced with database model check if (file doesnt exist create it)
             if (!File.Exists(path))
             {
@@ -116,7 +117,7 @@ namespace oemLeads.Queries
                 foreach (JsonElement Leads in RwilLeadsRoot.EnumerateArray())
                 {
                     // Routine to process each lead
-                    if (!RwilProcessSingleLead(Leads.ToString(), RwilToken, KeyloopToken, ref SABAppID, ref GedaiServiceLeadID))
+                    if (!RwilProcessSingleLead(Leads.ToString(), RwilToken, KeyloopToken, ref SABAppID, ref GedaiServiceLeadID,ref sAppDate))
                     {
                         bLeadProcessFail = true;
                         bResultLoop = false;
@@ -124,7 +125,7 @@ namespace oemLeads.Queries
                     }
                     // TODO Replace with database write
                     using StreamWriter sw = File.AppendText(path);
-                    sw.WriteLine(GedaiServiceLeadID + "," + SABAppID + ",T4");
+                    sw.WriteLine(GedaiServiceLeadID + "," + SABAppID + "," + sAppDate + ",T4");
                 }
                 if (bLeadProcessFail) break;
             }
@@ -132,7 +133,7 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
-        public static bool RwilProcessSingleLead(string RwilJasonSingleLead, JsonElement RwilToken, JsonElement KeyloopToken, ref string SABAppID, ref string? GedaiServiceLeadID)
+        public static bool RwilProcessSingleLead(string RwilJasonSingleLead, JsonElement RwilToken, JsonElement KeyloopToken, ref string SABAppID, ref string? GedaiServiceLeadID,ref string? sAppDate)
         {
             var bResultLoop = false;
             var RwilLead = JsonSerializer.Deserialize<RwilSingleLead>(RwilJasonSingleLead);
@@ -145,7 +146,9 @@ namespace oemLeads.Queries
                 GedaiServiceLeadID = RwilLead?.Payload?.ServiceLeadRecordID;
                 // SAB Method
                 Console.WriteLine("");
-                if (!RwilProcessLead_SAB(RwilLead, ref SABAppID, KeyloopToken)) break;
+                if (!RwilProcessLead_SAB(RwilLead, ref SABAppID,ref sAppDate, KeyloopToken)) break;
+                // Update Repair Order Notes
+                if (!RwilProcessLead_RepairOrderDetails(SABAppID, KeyloopToken)) break;
                 // T0 Update to Rwil Request
                 Console.WriteLine("");
                 if (!RwilProcessLead_RwilT0(RwilLead, RwilToken)) break;
@@ -154,7 +157,7 @@ namespace oemLeads.Queries
                 if (!RwilProcessLead_KeyloopLead(RwilLead, SABAppID)) break;
                 // Rwil Offset Commit
                 Console.WriteLine("");
-                if (!RwilProcessLead_RwilOffset(RwilLead, RwilToken)) break;
+                //if (!RwilProcessLead_RwilOffset(RwilLead, RwilToken)) break;
                 // T3 Update to Rwil Request
                 Console.WriteLine("");
                 if (!RwilProcessLead_RwilT3(RwilLead, RwilToken)) break;
@@ -164,7 +167,7 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
-        public static bool RwilProcessLead_SAB(RwilSingleLead? RwilLead, ref string AppointmentID, JsonElement KeyloopToken)
+        public static bool RwilProcessLead_SAB(RwilSingleLead? RwilLead, ref string AppointmentID, ref string AppointmentDate, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
             var bTesting = false;
@@ -190,6 +193,7 @@ namespace oemLeads.Queries
                 var sabresponse = JsonSerializer.Deserialize<SABResponse>(SABResJsonString);
                 Console.WriteLine($"Appointment ID: {sabresponse?.AppointmentId}");
                 AppointmentID = $"{sabresponse?.AppointmentId}";
+                AppointmentDate = $"{sabresponse?.Details.DueInDateTime}";
                 bResultLoop = true;
             }
 
@@ -257,6 +261,9 @@ namespace oemLeads.Queries
                         };
                     }
                 }
+
+                if (RWFirstName == "" && RWLastName == "") break;
+                if (RWPhone == "" && RWEmail == "") break;
 
                 var sabrequest = new SABRequest()
                 {
@@ -333,6 +340,46 @@ namespace oemLeads.Queries
                 sabrequest.AdditionalServiceProducts.Add(AdditionalSerProd);
                 SABReqJsonString = JsonSerializer.Serialize(sabrequest);
                 Console.WriteLine(SABReqJsonString);
+                bResultLoop = true;
+            }
+
+            return bResultLoop;
+        }
+
+
+        public static bool RwilProcessLead_RepairOrderDetails(string AppointmentID, JsonElement KeyloopToken)
+        {
+            var bResultLoop = false;
+            var RODReqJsonString = "";
+
+            while (!bResultLoop)
+            {
+                // Reminder Logic Done here
+                if (!RwilProcessLead_RODetailsRequest_Build(ref RODReqJsonString)) break;
+
+                var RODtask = RwilProcessLead_PatchRODetailsAsync(KeyloopToken, RODReqJsonString, AppointmentID);
+                string RODResJsonString = RODtask.GetAwaiter().GetResult();
+                if (RODResJsonString == "-1") break;
+                bResultLoop = true;
+            }
+
+            return bResultLoop;
+        }
+
+        public static bool RwilProcessLead_RODetailsRequest_Build(ref string RODReqJsonString)
+        {
+            var bResultLoop = false;
+            
+
+            while (!bResultLoop)
+            {
+                // Perform a single loop to reduce process and store info in variables
+                var repairorderdetailsreq = new RepairOrderDetailsReq()
+                {
+                    Notes = "Customer Contacted: Phone/Email,\n T5_C_14: No appointment needed: Y/N,\n T5_C_15: No appointment wanted: Y/N,\n T5_C_16: Customer not reachable after # contact attempts: Y/N,\n T5_C_17: Contact channels no longer valid: Y/N,\n T5_C_18: Customer no longer in possesion of vehicle: Y/N",
+                };
+                RODReqJsonString = JsonSerializer.Serialize(repairorderdetailsreq);
+                Console.WriteLine(RODReqJsonString);
                 bResultLoop = true;
             }
 

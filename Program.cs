@@ -17,13 +17,19 @@ namespace RwillLeadAdaptorBuildV2
             var bResultLoop = false;
             JsonElement RwilAccess_Token = default;
             JsonElement Keyloop_Token = default;
+            int Timer = 5000, runTimes = 15;
 
             while (!bResultLoop)
             {
-                // Start by processing Rwil Leads 
-                if (!RwilProcessLead(ref RwilAccess_Token,ref Keyloop_Token)) break;
-                // Next routine to now use the database and perform T4 T5 T6 T7 updates to Rwil using repair order 
-                if (!RwilUpdateLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
+                // Simulate lambda scedular
+                for (int i = 0; i < runTimes; i++)
+                {
+                    // Start by processing Rwil Leads 
+                    if (!RwilProcessLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
+                    // Next routine to now use the database and perform T4 T5 T6 T7 updates to Rwil using repair order
+                    if (!RwilUpdateLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
+                    Thread.Sleep(Timer);
+                }
                 bResultLoop = true;
             }
 
@@ -37,9 +43,10 @@ namespace RwillLeadAdaptorBuildV2
             while (!bResultLoop)
             {
                 if (!RwilProcessLeadQuery.RwilLeadGedaiAuth(ref RwilAccess_Token)) break;
-                if (!RwilProcessLeadQuery.RwilLeadCreateConsumer(RwilAccess_Token)) break;
                 if (!RwilProcessLeadQuery.KeyloopGatewayOAuth(ref Keyloop_Token)) break;
-                if (!RwilProcessLeadQuery.RwilGetServiceLeads(RwilAccess_Token, Keyloop_Token)) break;
+                // Anything before can effect the update process, next routine can fail will try again later
+                RwilProcessLeadQuery.RwilLeadCreateConsumer(RwilAccess_Token);
+                RwilProcessLeadQuery.RwilGetServiceLeads(RwilAccess_Token, Keyloop_Token);
                 bResultLoop = true;
             }
 

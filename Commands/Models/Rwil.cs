@@ -543,9 +543,6 @@ namespace oemLeads.Commands.Models
 
     public class T5A_ServiceAdvisor
     {
-        [JsonPropertyName("emailAdress")]
-        public string EmailAdress { get; set; }
-
         [JsonPropertyName("telephoneNumber")]
         public string TelephoneNumber { get; set; }
 

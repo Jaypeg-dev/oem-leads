@@ -337,6 +337,11 @@ namespace oemLeads.Queries
             while (!bResultLoop)
             {
                 // Reminder Logic Done here
+                // T5_C_14 no appointment needed
+                // T5_C_15 no appointment wanted
+                // T5_C_16 customer not reachable after # contact attempts
+                // T5_C_17 contact channels no longer valid
+                // T5_C_18 Customer no longer in possesion of vehicle 
                 if (!RwilUpdateLead_RwilT5CRequest_Build(RepairOrderInfo, ref RwilT5CJsonString, GedaiServiceID)) break;
                 Console.WriteLine(RwilT5CJsonString);
                 // Async task needed here to perform the Rwil T4 Update, dont forget error handling

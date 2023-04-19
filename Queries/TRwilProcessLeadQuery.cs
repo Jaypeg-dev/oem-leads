@@ -160,6 +160,37 @@ namespace oemLeads.Queries
             }
         }
 
+        public static async Task<string> RwilProcessLead_PatchRODetailsAsync(JsonElement KeyloopAccess_Token, string RODRequest,string SABID)
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.af-stage.keyloop.io/31981/44014796-BR0001/v1/repair-orders/{SABID}/details");
+            request.Headers.Add("x-on-behalf-of", "apiuser");
+            request.Headers.Add("Authorization", "Bearer " + KeyloopAccess_Token);
+            var content = new StringContent(RODRequest, null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            Console.WriteLine(response);
+
+            try
+            {
+                //  Block of code to try
+                response.EnsureSuccessStatusCode();
+                var actualcontent = await response.Content.ReadAsStringAsync();
+                return actualcontent;
+            }
+            catch (HttpRequestException e)
+            {
+                //  Block of code to handle errors
+                Console.WriteLine("\nException Caught! on patching repair order details");
+                Console.WriteLine("\nMessage :{0} ", e.Message);
+                var errorresponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"\n{errorresponse}");
+
+                return "-1";
+                // return response.ToString();
+            }
+        }
+
         public static async Task<string> RwilProcessLead_RwilT0Async(JsonElement RwilToken, string RwilT0Request)
         {
             var client = new HttpClient();

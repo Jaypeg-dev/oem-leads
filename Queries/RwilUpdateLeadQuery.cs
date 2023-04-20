@@ -1,6 +1,4 @@
 ﻿using oemLeads.Commands.Models;
-using System.Diagnostics.Metrics;
-using System.Numerics;
 using System.Text.Json;
 
 namespace oemLeads.Queries
@@ -16,9 +14,9 @@ namespace oemLeads.Queries
 
             while (!bResultLoop)
             {
-                // Temp call for token during test
-                // if (!RwilProcessLeadQuery.KeyloopGatewayOAuth(ref Keyloop_Token)) break;
-                // if (!RwilProcessLeadQuery.RwilLeadGedaiAuth(ref RwilAccess_Token)) break;
+                // Perform Auths for updates
+                if (!RwilProcessLeadQuery.KeyloopGatewayOAuth(ref Keyloop_Token)) break;
+                if (!RwilProcessLeadQuery.RwilLeadGedaiAuth(ref RwilAccess_Token)) break;
                 // TODO Mock Database needs to move to platform database
                 try
                 {
@@ -115,39 +113,39 @@ namespace oemLeads.Queries
 
             while (!bResultLoop)
             {
-                RepairOrderResponse? ROJasonResponse = JsonSerializer.Deserialize<RepairOrderResponse>(ROResponse);
+                    var ROJasonResponse = JsonSerializer.Deserialize<RepairOrderResponse>(ROResponse);
 
-                switch (Stage)
-                {
-                    case "T4":
-                        RwilUpdateLead_RwilT4(GedaiServiceID, ROJasonResponse, RwilToken, ref updateStage);
-                        break;
-                    case "T5":
-                        RwilUpdateLead_RwilT5(GedaiServiceID, ROJasonResponse, RwilToken, ref updateStage);
-                        break;
-                    case "TBA":
-                        // Monitor check T6, T7 and Repair Order Header Status - Closed Work Completed update 
-                        RwilUpdateLead_RwilTBA(GedaiServiceID, ref sAppDate, ROJasonResponse, RwilToken, ref updateStage);
-                        break;
-                    default:
-                        break;
-                }
-
-                // TODO need to replace this logic with update database from platform
-                if (!File.Exists(path))
-                {
-                    using var sw = File.CreateText(path + filename);
-                }
-
-                using (StreamWriter sw = File.AppendText(path + filename))
-                {
-                    if (updateStage != "END")
+                    switch (Stage)
                     {
-                        sw.WriteLine($"{GedaiServiceID},{ROJasonResponse!.RepairOrderId},{sAppDate},{updateStage}");
+                        case "T4":
+                            RwilUpdateLead_RwilT4(GedaiServiceID, ROJasonResponse, RwilToken, ref updateStage);
+                            break;
+                        case "T5":
+                            RwilUpdateLead_RwilT5(GedaiServiceID, ROJasonResponse, RwilToken, ref updateStage);
+                            break;
+                        case "TBA":
+                            // Monitor check T6, T7 and Repair Order Header Status - Closed Work Completed update 
+                            RwilUpdateLead_RwilTBA(GedaiServiceID, ref sAppDate, ROJasonResponse, RwilToken, ref updateStage);
+                            break;
+                        default:
+                            break;
                     }
-                }
 
-                bResultLoop = true;
+                    // TODO need to replace this logic with update database from platform
+                    if (!File.Exists(path + filename))
+                    {
+                        using var sw = File.CreateText(path + filename);
+                    }
+
+                    using (StreamWriter sw = File.AppendText(path + filename))
+                    {
+                        if (updateStage != "END")
+                        {
+                            sw.WriteLine($"{GedaiServiceID},{ROJasonResponse!.RepairOrderId},{ROJasonResponse?.Appointment.DueInDateTime},{updateStage}");
+                        }
+                    }
+                    Thread.Sleep(5000);
+                    bResultLoop = true;
             }
 
             return bResultLoop;
@@ -170,6 +168,7 @@ namespace oemLeads.Queries
                 Console.WriteLine(RwilT4RespJsonString);
                 bResultLoop = true;
             }
+
             if (bResultLoop) updateStage = "T5";
             return bResultLoop;
         }
@@ -177,13 +176,14 @@ namespace oemLeads.Queries
         public static bool RwilUpdateLead_RwilT4Request_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT4JsonString, string GedaiServiceID)
         {
             var bResultLoop = false;
-            string sContactType = "";
+            var sContactType = "";
 
             while (!bResultLoop)
             {
                 // TODO Repair order details notes to check Contacted Customer
                 if (RepairOrderInfo?.Details.Notes == null) break;
                 if (!RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType)) break;
+
                 var rwilt4 = new RwilT4()
                 {
                     Event = new T4Event()
@@ -205,7 +205,8 @@ namespace oemLeads.Queries
         public static bool RwilUpdateLead_CheckContactedNotes(string sNotes, ref string sContactType)
         {
             var bResultLoop = false;
-            string cancelType = "";
+            var cancelType = "";
+
             while (!bResultLoop)
             {
                 sContactType = "";
@@ -223,24 +224,26 @@ namespace oemLeads.Queries
             var values = sNotes.Split(Delimenator);
             sContactType = "";
             cancelType = "";
+
             for (int i = 0; i < values.Length; i++)
             {
                 if (i == 0)
                 {
                     // Will always be Customer Contacted should be fixed not correct no details
-                    string something = values[i].Trim();
+                    var something = values[i].Trim();
                     if (!something.Contains("Customer Contacted")) return false;
                     if (something.Contains("Phone/Email")) { sContactType = ""; } else if (something.Contains("Phone")) { sContactType = "Phone"; } else if (something.Contains("Email")) { sContactType = "Email"; }
                 }
                 else
                 {
                     // Cancellation types
-                    string something = values[i].Trim();
+                    var something = values[i].Trim();
                     var fieldCancellation = something.Split(fieldSeperator);
                     // Only 3 fields - type description and decision first check decision
                     if (fieldCancellation[2].Trim() == "Y" && fieldCancellation[2].Trim() != "Y/N") cancelType = fieldCancellation[0].Trim();
                 }
             }
+
             if (cancelType == "") cancelType = "T5_C_14";
             return true;
         }
@@ -255,18 +258,33 @@ namespace oemLeads.Queries
                 switch (RepairOrderInfo?.Status)
                 {
                     case "CREATED":
-                        bIndividualCheck = RwilUpdateLead_RwilT5A(GedaiServiceID,RepairOrderInfo,RwilToken);
-                        break;
-                    case "CANCELLED":
-                        bIndividualCheck = RwilUpdateLead_RwilT5C(GedaiServiceID,RepairOrderInfo,RwilToken);
-                        if (bIndividualCheck) updateStage = "END";
+                        bIndividualCheck = RwilUpdateLead_RwilT5A(GedaiServiceID, RepairOrderInfo, RwilToken);
+                        if (!bIndividualCheck)
+                        {
+                            if (!RwilUpdateLead_CheckedNoteItemsExist(RepairOrderInfo))
+                            {
+                                // Rwil notes has been deleted perform T5C check
+                                bIndividualCheck = RwilUpdateLead_RwilT5C(GedaiServiceID, RepairOrderInfo, RwilToken);
+                                if (bIndividualCheck) updateStage = "END";
+                            }
+                        }
+
                         break;
                     default:
+                        if (!RwilUpdateLead_CheckedNoteItemsExist(RepairOrderInfo))
+                        {
+                            // Rwil notes has been deleted perform T5C check
+                            bIndividualCheck = RwilUpdateLead_RwilT5C(GedaiServiceID, RepairOrderInfo, RwilToken);
+                            if (bIndividualCheck) updateStage = "END";
+                        }
+
                         break;
                 }
+
                 if (!bIndividualCheck) break;
                 bResultLoop = true;
             }
+
             if (bResultLoop && updateStage != "END") updateStage = "TBA";
             return bResultLoop;
         }
@@ -295,13 +313,14 @@ namespace oemLeads.Queries
         public static bool RwilUpdateLead_RwilT5ARequest_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT5AJsonString, string GedaiServiceID)
         {
             var bResultLoop = false;
-            string sContactType = "";
+            var sContactType = "";
 
             while (!bResultLoop)
             {
                 // Create routine to loop through job items 
                 if (!RwilUpdateLead_CheckedJobItemsBooked(RepairOrderInfo)) break;
                 RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType);
+
                 var t5a_rwilt5a = new T5A_RwilT5A()
                 {
                     Event = new T5A_Event()
@@ -313,7 +332,6 @@ namespace oemLeads.Queries
                         AppointmentDate = RepairOrderInfo?.Appointment.DueInDateTime,
                         ServiceAdvisor = new T5A_ServiceAdvisor()
                         {
-                            EmailAdress = "",
                             TelephoneNumber = "",
                             Name = RepairOrderInfo?.Resources.AssignedAdvisor.Name,
                             OrgGroup = "",
@@ -345,12 +363,14 @@ namespace oemLeads.Queries
                         {
                             foreach (var ROLabor in RepairOrderJob?.Labor)
                             {
-                                if (ROLabor.Status == "BOOKED") {
+                                if (ROLabor.Status == "BOOKED")
+                                {
                                     bBooked = true;
                                     break;
-                                } 
+                                }
                             }
                         }
+
                         // loop through menu's as well
                         if (RepairOrderJob?.Menus is not null)
                         {
@@ -369,9 +389,11 @@ namespace oemLeads.Queries
                                 }
                             }
                         }
+
                         if (bBooked) break;
                     }
                 }
+
                 // Searched and couldnt find anything booked
                 if (!bBooked) break;
                 bResultLoop = true;
@@ -380,250 +402,314 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
-        public static bool RwilUpdateLead_RwilT5C(string GedaiServiceID, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken)
+        public static bool RwilUpdateLead_CheckedNoteItemsExist(RepairOrderResponse? RepairOrderInfo)
         {
             var bResultLoop = false;
-            var RwilT5CJsonString = "";
+            var bNotes = false;
 
             while (!bResultLoop)
             {
-                if (!RwilUpdateLead_RwilT5CRequest_Build(RepairOrderInfo, ref RwilT5CJsonString, GedaiServiceID)) break;
-                Console.WriteLine(RwilT5CJsonString);
-                // Async task needed here to perform the Rwil T5C Update, dont forget error handling
-                var RwilT5Ctask = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT5CJsonString);
-                var RwilT5CRespJsonString = RwilT5Ctask.GetAwaiter().GetResult();
-                if (RwilT5CRespJsonString == "-1") break;
-                Console.WriteLine(RwilT5CRespJsonString);
-                bResultLoop = true;
-            }
-
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_RwilT5CRequest_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT5CJsonString, string GedaiServiceID)
-        {
-            // The following needs to be done after appointment created to patch the detail notes which is used in this routine
-            // Online Booking
-            // Customer Contacted: Phone/Email,
-            // T5_C_14: No appointment needed: Y/N,
-            // T5_C_15: No appointment wanted: Y/N,
-            // T5_C_16: Customer not reachable after # contact attempts: Y/N,
-            // T5_C_17: Contact channels no longer valid: Y/N,
-            // T5_C_18: Customer no longer in possesion of vehicle: Y/N
-            var bResultLoop = false;
-            string sContactType = "", cancelType = "";
-
-            while (!bResultLoop)
-            {
-                RwilUpdateLead_GetDetailsFromNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref cancelType);
-                if (cancelType == "") break;
-                var t5c_rwilt5c = new T5C_RwilT5C()
+                // Create routine to loop through notes items
+                if (RepairOrderInfo?.Jobs is not null)
                 {
-                    Event = new T5C_Event()
+                    foreach (var RepairOrderJob in RepairOrderInfo?.Jobs)
                     {
-                        EventType = "T5_C",
-                        RejectionCode = cancelType,
-                        ServiceLeadRecordID = GedaiServiceID,
-                        Timestamp = RwilUpdateLead_CurrentDateTime(),
-                        CustomerContactChannel = sContactType,
-                        AdditionalReason = "DMS Repair Order Cancelled",
-                        OptionalText = "",
-                    },
-                };
+                        if (RepairOrderJob?.Notes is not null)
+                        {
+                            foreach (var RONotes in RepairOrderJob?.Notes)
+                            {
+                                if (RONotes is not null)
+                                {
+                                    bNotes = true;
+                                    break;
+                                }
+                            }
+                        }
 
-                RwilT5CJsonString = JsonSerializer.Serialize(t5c_rwilt5c);
-                bResultLoop = true;
-            }
+                        // loop through menu's as well
+                        if (RepairOrderJob?.Menus is not null)
+                        {
+                            foreach (var ROMenus in RepairOrderJob?.Menus)
+                            {
+                                if (ROMenus?.Notes is not null)
+                                {
+                                    foreach (var ROMenusNotes in ROMenus?.Notes)
+                                    {
+                                        if (ROMenusNotes is not null)
+                                        {
+                                            bNotes = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_RwilTBA(string GedaiServiceID,ref string sAppDate, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken, ref string updateStage)
-        {
-            var bResultLoop = false;
-            var bIndividualCheck = false;
-
-            while (!bResultLoop)
-            {
-                switch (RepairOrderInfo?.Status)
-                {
-                    case "WORKCOMPLETED":
-                        bIndividualCheck = true;
-                        updateStage = "END";
-                        break;
-                    case "CLOSED":
-                        bIndividualCheck = true;
-                        updateStage = "END";
-                        break;
-                    case "CANCELLED":
-                        // T7 Update Appointment cancelled
-                        bIndividualCheck = RwilUpdateLead_RwilT7(GedaiServiceID, RwilToken);
-                        updateStage = "END";
-                        break;
-                    default:
-                        // Check for T6 update
-                        if (RwilUpdateLead_CheckAppointmentChanged(ref sAppDate, RepairOrderInfo)) bIndividualCheck = RwilUpdateLead_RwilT6(GedaiServiceID, RepairOrderInfo, RwilToken);
-                        updateStage = "TBA";
-                        break;
-                }
-                if (!bIndividualCheck) break;
-                bResultLoop = true;
-            }
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_CheckAppointmentChanged(ref string sAppDate, RepairOrderResponse? RepairOrderInfo)
-        {
-            bool bDateChanged = false;
-            DateTime OriginalAppDate = DateTime.Parse(sAppDate);
-            DateTime CurrentAppDate = DateTime.Parse(RepairOrderInfo?.Appointment.DueInDateTime);
-            if (OriginalAppDate != CurrentAppDate)
-            {
-                sAppDate = RepairOrderInfo?.Appointment.DueInDateTime;
-                bDateChanged = true;
-
-            }
-            return bDateChanged;
-        }
-
-        public static bool RwilUpdateLead_RwilT6(string GedaiServiceID, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken)
-        {
-            var bResultLoop = false;
-            var RwilT6JsonString = "";
-
-            while (!bResultLoop)
-            {
-                // Reminder Logic Done here
-                if (!RwilUpdateLead_RwilT6Request_Build(RepairOrderInfo, ref RwilT6JsonString, GedaiServiceID)) break;
-                Console.WriteLine(RwilT6JsonString);
-                // Async task needed here to perform the Rwil T6 Update, dont forget error handling
-                var RwilT6task = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT6JsonString);
-                var RwilT6RespJsonString = RwilT6task.GetAwaiter().GetResult();
-                if (RwilT6RespJsonString == "-1") break;
-                Console.WriteLine(RwilT6RespJsonString);
-                bResultLoop = true;
-            }
-
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_RwilT6Request_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT6JsonString, string GedaiServiceID)
-        {
-            var bResultLoop = false;
-
-            while (!bResultLoop)
-            {
-                var t6_rwilt6 = new T6_RwilT6()
-                {
-                    Event = new T6_Event()
-                    {
-                        EventType = "T6",
-                        ServiceLeadRecordID = GedaiServiceID,
-                        Timestamp = RwilUpdateLead_CurrentDateTime(),
-                        AppointmentDate = RepairOrderInfo?.Appointment.DueInDateTime,
-                        OptionalText = "",
-                    },
-                };
-
-                RwilT6JsonString = JsonSerializer.Serialize(t6_rwilt6);
-                bResultLoop = true;
-            }
-
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_RwilT7(string GedaiServiceID, JsonElement RwilToken)
-        {
-            var bResultLoop = false;
-            var RwilT7JsonString = "";
-
-            while (!bResultLoop)
-            {
-                // Reminder Logic Done here
-                if (!RwilUpdateLead_RwilT7Request_Build(ref RwilT7JsonString, GedaiServiceID)) break;
-                Console.WriteLine(RwilT7JsonString);
-                // Async task needed here to perform the Rwil T4 Update, dont forget error handling
-                var RwilT7task = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT7JsonString);
-                var RwilT7RespJsonString = RwilT7task.GetAwaiter().GetResult();
-                if (RwilT7RespJsonString == "-1") break;
-                Console.WriteLine(RwilT7RespJsonString);
-                bResultLoop = true;
-            }
-
-            return bResultLoop;
-        }
-
-        public static bool RwilUpdateLead_RwilT7Request_Build(ref string RwilT7JsonString, string GedaiServiceID)
-        {
-            var bResultLoop = false;
-
-            while (!bResultLoop)
-            {
-                var t7_rwilt7 = new T7_RwilT7()
-                {
-                    Event = new T7_Event()
-                    {
-                        EventType = "T7",
-                        ServiceLeadRecordID = GedaiServiceID,
-                        Timestamp = RwilUpdateLead_CurrentDateTime(),
-                        OptionalText = "",
-                    },
-                };
-
-                RwilT7JsonString = JsonSerializer.Serialize(t7_rwilt7);
-                bResultLoop = true;
-            }
-
-            return bResultLoop;
-        }
-
-        public static bool Rwil_CheckReplaceDataFile(string oldfile, string newfile)
-        {
-            var bResultLoop = false;
-
-            while (!bResultLoop)
-            {
-                var path = newfile;
-                var path2 = oldfile;
-
-                try
-                {
-                    if (!File.Exists(path))
-                    {
-                        using FileStream fs = File.Create(path);
-                    }
-
-                    // Ensure that the target does not exist.        
-                    if (File.Exists(path2)) File.Delete(path2);
-                    // Move the file.
-                    File.Move(path, path2);
-                    Console.WriteLine("{0} was moved to {1}.", path, path2);
-                    // See if the original exists now.
-                    if (File.Exists(path))
-                    {
-                        Console.WriteLine("The original file still exists, which is unexpected.");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("The original file no longer exists, which is expected.");
+                        if (bNotes) break;
                     }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("The process failed: {0}", e.ToString());
-                }
 
+                // Searched and couldnt find anything
+                if (!bNotes) break;
                 bResultLoop = true;
             }
 
             return bResultLoop;
         }
 
-        public static string RwilUpdateLead_CurrentDateTime()
-        {
-            DateTime dt1 = DateTime.Now;
-            return dt1.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+            public static bool RwilUpdateLead_RwilT5C(string GedaiServiceID, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken)
+            {
+                var bResultLoop = false;
+                var RwilT5CJsonString = "";
+
+                while (!bResultLoop)
+                {
+                    if (!RwilUpdateLead_RwilT5CRequest_Build(RepairOrderInfo, ref RwilT5CJsonString, GedaiServiceID)) break;
+                    Console.WriteLine(RwilT5CJsonString);
+                    // Async task needed here to perform the Rwil T5C Update, dont forget error handling
+                    var RwilT5Ctask = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT5CJsonString);
+                    var RwilT5CRespJsonString = RwilT5Ctask.GetAwaiter().GetResult();
+                    if (RwilT5CRespJsonString == "-1") break;
+                    Console.WriteLine(RwilT5CRespJsonString);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_RwilT5CRequest_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT5CJsonString, string GedaiServiceID)
+            {
+                // The following needs to be done after appointment created to patch the detail notes which is used in this routine
+                // Online Booking
+                // Customer Contacted: Phone/Email,
+                // T5_C_14: No appointment needed: Y/N,
+                // T5_C_15: No appointment wanted: Y/N,
+                // T5_C_16: Customer not reachable after # contact attempts: Y/N,
+                // T5_C_17: Contact channels no longer valid: Y/N,
+                // T5_C_18: Customer no longer in possesion of vehicle: Y/N
+                var bResultLoop = false;
+                string sContactType = "", cancelType = "";
+
+                while (!bResultLoop)
+                {
+                    RwilUpdateLead_GetDetailsFromNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref cancelType);
+                    if (cancelType == "") break;
+
+                    var t5c_rwilt5c = new T5C_RwilT5C()
+                    {
+                        Event = new T5C_Event()
+                        {
+                            EventType = "T5_C",
+                            RejectionCode = cancelType,
+                            ServiceLeadRecordID = GedaiServiceID,
+                            Timestamp = RwilUpdateLead_CurrentDateTime(),
+                            CustomerContactChannel = sContactType,
+                            AdditionalReason = "DMS Repair Order Cancelled",
+                            OptionalText = "",
+                        },
+                    };
+
+                    RwilT5CJsonString = JsonSerializer.Serialize(t5c_rwilt5c);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_RwilTBA(string GedaiServiceID, ref string sAppDate, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken, ref string updateStage)
+            {
+                var bResultLoop = false;
+                var bIndividualCheck = false;
+
+                while (!bResultLoop)
+                {
+                    switch (RepairOrderInfo?.Status)
+                    {
+                        case "WORKCOMPLETED":
+                            bIndividualCheck = true;
+                            updateStage = "END";
+                            break;
+                        case "CLOSED":
+                            bIndividualCheck = true;
+                            updateStage = "END";
+                            break;
+                        default:
+                            if (RwilUpdateLead_CheckAppointmentChanged(ref sAppDate, RepairOrderInfo))
+                            {
+                                // T6 update
+                                bIndividualCheck = RwilUpdateLead_RwilT6(GedaiServiceID, RepairOrderInfo, RwilToken);
+                                updateStage = "TBA";
+                            }
+                            else if (!RwilUpdateLead_CheckedJobItemsBooked(RepairOrderInfo))
+                            {
+                                // T7 update
+                                bIndividualCheck = RwilUpdateLead_RwilT7(GedaiServiceID, RwilToken);
+                                updateStage = "END";
+                            }
+
+                            break;
+                    }
+
+                    if (!bIndividualCheck) break;
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_CheckAppointmentChanged(ref string sAppDate, RepairOrderResponse? RepairOrderInfo)
+            {
+                var bDateChanged = false;
+                var OriginalAppDate = DateTime.Parse(sAppDate);
+                var CurrentAppDate = DateTime.Parse(RepairOrderInfo?.Appointment.DueInDateTime);
+
+                if (OriginalAppDate != CurrentAppDate)
+                {
+                    sAppDate = RepairOrderInfo?.Appointment.DueInDateTime;
+                    bDateChanged = true;
+                }
+
+                return bDateChanged;
+            }
+
+            public static bool RwilUpdateLead_RwilT6(string GedaiServiceID, RepairOrderResponse? RepairOrderInfo, JsonElement RwilToken)
+            {
+                var bResultLoop = false;
+                var RwilT6JsonString = "";
+
+                while (!bResultLoop)
+                {
+                    // Reminder Logic Done here
+                    if (!RwilUpdateLead_RwilT6Request_Build(RepairOrderInfo, ref RwilT6JsonString, GedaiServiceID)) break;
+                    Console.WriteLine(RwilT6JsonString);
+                    // Async task needed here to perform the Rwil T6 Update, dont forget error handling
+                    var RwilT6task = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT6JsonString);
+                    var RwilT6RespJsonString = RwilT6task.GetAwaiter().GetResult();
+                    if (RwilT6RespJsonString == "-1") break;
+                    Console.WriteLine(RwilT6RespJsonString);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_RwilT6Request_Build(RepairOrderResponse? RepairOrderInfo, ref string RwilT6JsonString, string GedaiServiceID)
+            {
+                var bResultLoop = false;
+
+                while (!bResultLoop)
+                {
+                    var t6_rwilt6 = new T6_RwilT6()
+                    {
+                        Event = new T6_Event()
+                        {
+                            EventType = "T6",
+                            ServiceLeadRecordID = GedaiServiceID,
+                            Timestamp = RwilUpdateLead_CurrentDateTime(),
+                            AppointmentDate = RepairOrderInfo?.Appointment.DueInDateTime,
+                            OptionalText = "",
+                        },
+                    };
+
+                    RwilT6JsonString = JsonSerializer.Serialize(t6_rwilt6);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_RwilT7(string GedaiServiceID, JsonElement RwilToken)
+            {
+                var bResultLoop = false;
+                var RwilT7JsonString = "";
+
+                while (!bResultLoop)
+                {
+                    // Reminder Logic Done here
+                    if (!RwilUpdateLead_RwilT7Request_Build(ref RwilT7JsonString, GedaiServiceID)) break;
+                    Console.WriteLine(RwilT7JsonString);
+                    // Async task needed here to perform the Rwil T4 Update, dont forget error handling
+                    var RwilT7task = RwilUpdateLead_RwilTUpdateAsync(RwilToken, RwilT7JsonString);
+                    var RwilT7RespJsonString = RwilT7task.GetAwaiter().GetResult();
+                    if (RwilT7RespJsonString == "-1") break;
+                    Console.WriteLine(RwilT7RespJsonString);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool RwilUpdateLead_RwilT7Request_Build(ref string RwilT7JsonString, string GedaiServiceID)
+            {
+                var bResultLoop = false;
+
+                while (!bResultLoop)
+                {
+                    var t7_rwilt7 = new T7_RwilT7()
+                    {
+                        Event = new T7_Event()
+                        {
+                            EventType = "T7",
+                            ServiceLeadRecordID = GedaiServiceID,
+                            Timestamp = RwilUpdateLead_CurrentDateTime(),
+                            OptionalText = "",
+                        },
+                    };
+
+                    RwilT7JsonString = JsonSerializer.Serialize(t7_rwilt7);
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static bool Rwil_CheckReplaceDataFile(string oldfile, string newfile)
+            {
+                var bResultLoop = false;
+
+                while (!bResultLoop)
+                {
+                    var path = newfile;
+                    var path2 = oldfile;
+
+                    try
+                    {
+                        if (!File.Exists(path))
+                        {
+                            using var fs = File.Create(path);
+                        }
+
+                        // Ensure that the target does not exist.        
+                        if (File.Exists(path2)) File.Delete(path2);
+                        // Move the file.
+                        File.Move(path, path2);
+                        Console.WriteLine("{0} was moved to {1}.", path, path2);
+                        // See if the original exists now.
+                        if (File.Exists(path))
+                        {
+                            Console.WriteLine("The original file still exists, which is unexpected.");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("The original file no longer exists, which is expected.");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("The process failed: {0}", e.ToString());
+                    }
+
+                    bResultLoop = true;
+                }
+
+                return bResultLoop;
+            }
+
+            public static string RwilUpdateLead_CurrentDateTime()
+            {
+                var dt1 = DateTime.Now;
+                return dt1.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+            }
         }
     }
-}

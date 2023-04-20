@@ -17,14 +17,14 @@ namespace RwillLeadAdaptorBuildV2
             var bResultLoop = false;
             JsonElement RwilAccess_Token = default;
             JsonElement Keyloop_Token = default;
-            int Timer = 5000, runTimes = 15;
+            int Timer = 45000, runTimes = 15;
 
             while (!bResultLoop)
             {
                 // Simulate lambda scedular
                 for (int i = 0; i < runTimes; i++)
                 {
-                    // Start by processing Rwil Leads 
+                    // Start by processing Rwil Leads
                     if (!RwilProcessLead(ref RwilAccess_Token, ref Keyloop_Token)) break;
                     // Next routine to now use the database and perform T4 T5 T6 T7 updates to Rwil using repair order
                     if (!RwilUpdateLead(ref RwilAccess_Token, ref Keyloop_Token)) break;

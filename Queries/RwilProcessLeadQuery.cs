@@ -157,7 +157,7 @@ namespace oemLeads.Queries
                 if (!RwilProcessLead_KeyloopLead(RwilLead, SABAppID)) break;
                 // Rwil Offset Commit
                 Console.WriteLine("");
-                //if (!RwilProcessLead_RwilOffset(RwilLead, RwilToken)) break;
+                if (!RwilProcessLead_RwilOffset(RwilLead, RwilToken)) break;
                 // T3 Update to Rwil Request
                 Console.WriteLine("");
                 if (!RwilProcessLead_RwilT3(RwilLead, RwilToken)) break;

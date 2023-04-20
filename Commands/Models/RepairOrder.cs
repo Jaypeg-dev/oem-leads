@@ -189,7 +189,7 @@ namespace oemLeads.Commands.Models
         public string Description { get; set; }
 
         [JsonPropertyName("quantity")]
-        public int? Quantity { get; set; }
+        public double? Quantity { get; set; }
 
         [JsonPropertyName("discount")]
         public RORDiscount Discount { get; set; }

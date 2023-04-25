@@ -9,13 +9,13 @@ namespace oemLeads.Queries
         public static async Task<string> RwilLeadGedaiAuthAsync()
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/oauth2/token");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/oauth2/token");
 
             var collection = new List<KeyValuePair<string, string>>
                 {
                     new("grant_type", "client_credentials"),
-                    new("client_id", "ZAF996-Autoline-DRIVE-DMS-Q"),
-                    new("client_secret", "ghVThqVlpUa83Pmkr2Ghs73yTZ69IyEI2d3g")
+                    new("client_id", $"{App.Rwil_client_id}"),
+                    new("client_secret", $"{App.Rwil_client_secret}")
                 };
 
             var content = new FormUrlEncodedContent(collection);
@@ -45,7 +45,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilLeadCreateConsumerAsync(JsonElement RwilToken)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/consumers/ZAF996-Autoline-DRIVE-DMS-Q/ZAF996-Autoline-DRIVE-DMS-Q");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/consumers/{App.Rwil_systemid}/{App.Rwil_consumername}");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
             var content = new StringContent("", null, "text/plain");
             request.Content = content;
@@ -74,8 +74,8 @@ namespace oemLeads.Queries
         public static async Task<string> KeyloopGatewayOAuthAsync()
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.af-stage.keyloop.io/oauth/client_credential/accesstoken");
-            var content = new StringContent("grant_type=client_credentials&client_id=QZusCMlg42fU7m50CSg9AIAxI0G7yTpd&client_secret=AAtmfq1YLH1HugHs", null, "application/x-www-form-urlencoded");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Keyloop_baseurl}/oauth/client_credential/accesstoken");
+            var content = new StringContent($"grant_type=client_credentials&client_id={App.Keyloop_client_id}&client_secret={App.Keyloop_client_secret}", null, "application/x-www-form-urlencoded");
             request.Content = content;
             var response = await client.SendAsync(request);
             Console.WriteLine(response);
@@ -102,7 +102,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilGetServiceLeadsAsync(JsonElement RwilToken)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://rwil-qa.volkswagenag.com/rwil/gedai/consumers/ZAF996-Autoline-DRIVE-DMS-Q/ZAF996-Autoline-DRIVE-DMS-Q/serviceLead");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://{App.Rwil_host}/{App.Rwil_context}/consumers/{App.Rwil_systemid}/{App.Rwil_consumername}/serviceLead");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
             var content = new StringContent(string.Empty);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -132,7 +132,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_SABAsync(JsonElement KeyloopAccess_Token, string SABRequest)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.af-stage.keyloop.io/appointment/31981/44014796-BR0001/v1/appointments");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Keyloop_baseurl}/appointment/{App.Keyloop_enteprise}/{App.Keyloop_store}/v1/appointments");
             request.Headers.Add("Accept-Language", "ar");
             request.Headers.Add("Authorization", "Bearer " + KeyloopAccess_Token);
             var content = new StringContent(SABRequest, null, "application/json");
@@ -163,7 +163,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_PatchRODetailsAsync(JsonElement KeyloopAccess_Token, string RODRequest,string SABID)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.af-stage.keyloop.io/31981/44014796-BR0001/v1/repair-orders/{SABID}/details");
+            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://{App.Keyloop_baseurl}/{App.Keyloop_enteprise}/{App.Keyloop_store}/v1/repair-orders/{SABID}/details");
             request.Headers.Add("x-on-behalf-of", "apiuser");
             request.Headers.Add("Authorization", "Bearer " + KeyloopAccess_Token);
             var content = new StringContent(RODRequest, null, "application/json");
@@ -194,7 +194,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_RwilT0Async(JsonElement RwilToken, string RwilT0Request)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/producers/retail/ZAF996-Autoline-DRIVE-DMS-Q/ZAF09002V/serviceleadstatusupdate/created");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/producers/retail/{App.Rwil_systemid}/{App.Rwil_partnerkey}/serviceleadstatusupdate/created?targetSystem={App.Rwil_targetsystem}");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
             var content = new StringContent(RwilT0Request, null, "application/json");
             request.Content = content;
@@ -224,10 +224,10 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_KeyloopLeadAsync(string KeyloopLeadRequest)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://secure2.live-lead.com/api/v1/05537856-01b2-4f82-9e4e-afd500f002b1/octanevwsa/leads");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.KeyloopLeads_URL}/api/v1/{App.KeyloopLeads_IntegrationKey}/{App.KeyloopLeads_DealerCode}/leads");
 
             request.Headers
-                .Add("Authorization", "Basic " + RwilEncodeTo64("keyloopplatform.integration@keyloop.com:qFRy9Ce4hgpCJPcS"));
+                .Add("Authorization", "Basic " + RwilEncodeTo64($"{App.KeyloopLeads_User}:{App.KeyloopLeads_Password}"));
 
             var content = new StringContent(KeyloopLeadRequest, null, "application/json");
             request.Content = content;
@@ -256,7 +256,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_RwilOffsetAsync(JsonElement RwilToken, string RwilOffsetRequest)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/consumers/ZAF996-Autoline-DRIVE-DMS-Q/ZAF996-Autoline-DRIVE-DMS-Q/offset");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/consumers/{App.Rwil_systemid}/{App.Rwil_consumername}/offset");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
             var content = new StringContent(RwilOffsetRequest, null, "application/json");
             request.Content = content;
@@ -284,7 +284,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilProcessLead_RwilT3Async(JsonElement RwilToken, string RwilT3Request)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/producers/retail/ZAF996-Autoline-DRIVE-DMS-Q/ZAF09002V/serviceleadstatusupdate/created");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/producers/retail/{App.Rwil_systemid}/{App.Rwil_partnerkey}/serviceleadstatusupdate/created?targetSystem={App.Rwil_targetsystem}");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
             var content = new StringContent(RwilT3Request, null, "application/json");
             request.Content = content;

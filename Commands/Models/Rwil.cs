@@ -485,7 +485,7 @@ namespace oemLeads.Commands.Models
         public string? ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 
     // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
@@ -498,7 +498,7 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [JsonPropertyName("customerContactChannel")]
         public string CustomerContactChannel { get; set; }
@@ -520,13 +520,13 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [JsonPropertyName("customerContactChannel")]
         public string CustomerContactChannel { get; set; }
 
         [JsonPropertyName("appointmentDate")]
-        public string AppointmentDate { get; set; }
+        public DateTime AppointmentDate { get; set; }
 
         [JsonPropertyName("serviceAdvisor")]
         public T5A_ServiceAdvisor ServiceAdvisor { get; set; }
@@ -566,7 +566,7 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [JsonPropertyName("customerContactChannel")]
         public string CustomerContactChannel { get; set; }
@@ -594,10 +594,10 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [JsonPropertyName("appointmentDate")]
-        public string AppointmentDate { get; set; }
+        public DateTime AppointmentDate { get; set; }
 
         [JsonPropertyName("optionalText")]
         public string OptionalText { get; set; }
@@ -619,7 +619,7 @@ namespace oemLeads.Commands.Models
         public string ServiceLeadRecordID { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [JsonPropertyName("optionalText")]
         public string OptionalText { get; set; }

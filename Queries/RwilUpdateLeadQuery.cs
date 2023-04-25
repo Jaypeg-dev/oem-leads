@@ -144,7 +144,7 @@ namespace oemLeads.Queries
                             sw.WriteLine($"{GedaiServiceID},{ROJasonResponse!.RepairOrderId},{ROJasonResponse?.Appointment.DueInDateTime},{updateStage}");
                         }
                     }
-                    Thread.Sleep(5000);
+                    Thread.Sleep(2000);
                     bResultLoop = true;
             }
 
@@ -190,7 +190,7 @@ namespace oemLeads.Queries
                     {
                         EventType = "T4",
                         ServiceLeadRecordID = GedaiServiceID,
-                        Timestamp = RwilUpdateLead_CurrentDateTime(),
+                        Timestamp = DateTime.Now,
                         CustomerContactChannel = sContactType,
                     },
                 };
@@ -327,9 +327,9 @@ namespace oemLeads.Queries
                     {
                         EventType = "T5_A",
                         ServiceLeadRecordID = GedaiServiceID,
-                        Timestamp = RwilUpdateLead_CurrentDateTime(),
+                        Timestamp = DateTime.Now,
                         CustomerContactChannel = sContactType,
-                        AppointmentDate = RepairOrderInfo?.Appointment.DueInDateTime,
+                        AppointmentDate = RwilUpdateLead_ConvertToTimeZone(RepairOrderInfo?.Appointment.DueInDateTime),
                         ServiceAdvisor = new T5A_ServiceAdvisor()
                         {
                             TelephoneNumber = "",
@@ -502,7 +502,7 @@ namespace oemLeads.Queries
                             EventType = "T5_C",
                             RejectionCode = cancelType,
                             ServiceLeadRecordID = GedaiServiceID,
-                            Timestamp = RwilUpdateLead_CurrentDateTime(),
+                            Timestamp = DateTime.Now,
                             CustomerContactChannel = sContactType,
                             AdditionalReason = "DMS Repair Order Cancelled",
                             OptionalText = "",
@@ -605,8 +605,8 @@ namespace oemLeads.Queries
                         {
                             EventType = "T6",
                             ServiceLeadRecordID = GedaiServiceID,
-                            Timestamp = RwilUpdateLead_CurrentDateTime(),
-                            AppointmentDate = RepairOrderInfo?.Appointment.DueInDateTime,
+                            Timestamp = DateTime.Now,
+                            AppointmentDate = RwilUpdateLead_ConvertToTimeZone(RepairOrderInfo?.Appointment.DueInDateTime),
                             OptionalText = "",
                         },
                     };
@@ -651,7 +651,7 @@ namespace oemLeads.Queries
                         {
                             EventType = "T7",
                             ServiceLeadRecordID = GedaiServiceID,
-                            Timestamp = RwilUpdateLead_CurrentDateTime(),
+                            Timestamp = DateTime.Now,
                             OptionalText = "",
                         },
                     };
@@ -711,5 +711,14 @@ namespace oemLeads.Queries
                 var dt1 = DateTime.Now;
                 return dt1.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
             }
+            public static DateTime RwilUpdateLead_ConvertToTimeZone(string sTimeWithZ)
+            {
+                DateTime dt1 = DateTime.Now;
+                System.Text.StringBuilder strBuilder = new System.Text.StringBuilder(sTimeWithZ);
+                strBuilder[sTimeWithZ.IndexOf('Z')] = 'z';
+                string adjusted_dmsdateformat = strBuilder.ToString();
+                DateTime ConvertedDateTime = DateTime.Parse(dt1.ToString(adjusted_dmsdateformat));
+                return ConvertedDateTime;
+            }
         }
-    }
+}

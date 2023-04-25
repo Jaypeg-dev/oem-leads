@@ -697,7 +697,7 @@ namespace oemLeads.Queries
                     {
                         EventType = "T3",
                         ServiceLeadRecordID = RwilLead?.Payload?.ServiceLeadRecordID,
-                        Timestamp = RwilProcessLead_CurrentDateTime(),
+                        Timestamp = DateTime.Now,
                     },
                 };
 
@@ -712,6 +712,15 @@ namespace oemLeads.Queries
         {
             DateTime dt1 = DateTime.Now;
             return dt1.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+        }
+        public static DateTime RwilProcessLead_ConvertToTimeZone(string sTimeWithZ)
+        {
+            DateTime dt1 = DateTime.Now;
+            System.Text.StringBuilder strBuilder = new System.Text.StringBuilder(sTimeWithZ);
+            strBuilder[sTimeWithZ.IndexOf('Z')] = 'z';
+            string adjusted_dmsdateformat = strBuilder.ToString();
+            DateTime ConvertedDateTime = DateTime.Parse(dt1.ToString(adjusted_dmsdateformat));
+            return ConvertedDateTime;
         }
     }
 }

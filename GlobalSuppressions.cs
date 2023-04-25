@@ -6,3 +6,5 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>", Scope = "member", Target = "~M:RwillLeadAdaptorBuildV2.Program.Main(System.String[])")]
+[assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "<Pending>", Scope = "member", Target = "~M:oemLeads.Queries.RwilProcessLeadQuery.RwilProcessLead_ConvertToTimeZone(System.String)~System.DateTime")]
+[assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "<Pending>", Scope = "member", Target = "~M:oemLeads.Queries.RwilUpdateLeadQuery.RwilUpdateLead_ConvertToTimeZone(System.String)~System.DateTime")]

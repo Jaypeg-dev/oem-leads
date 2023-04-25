@@ -17,7 +17,7 @@ namespace RwillLeadAdaptorBuildV2
             var bResultLoop = false;
             JsonElement RwilAccess_Token = default;
             JsonElement Keyloop_Token = default;
-            int Timer = 45000, runTimes = 15;
+            int Timer = 8000, runTimes = 70;
 
             while (!bResultLoop)
             {

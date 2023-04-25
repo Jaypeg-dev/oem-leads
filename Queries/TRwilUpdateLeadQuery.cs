@@ -9,7 +9,7 @@ namespace oemLeads.Queries
         public static async Task<string> RwilUpdateLead_GetRepairOrderIDAsync(JsonElement KeyloopAccess_Token, string RepairOrderID)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.af-stage.keyloop.io/31981/44014796-BR0001/v1/repair-orders/{RepairOrderID}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://{App.Keyloop_baseurl}/{App.Keyloop_enteprise}/{App.Keyloop_store}/v1/repair-orders/{RepairOrderID}");
             request.Headers.Add("Accept-Language", "ar");
             request.Headers.Add("Authorization", "Bearer " + KeyloopAccess_Token);
             var content = new StringContent("", null, "application/json");
@@ -34,12 +34,12 @@ namespace oemLeads.Queries
                 return "-1";
             }
         }
-        public static async Task<string> RwilUpdateLead_RwilTUpdateAsync(JsonElement RwilToken, string RwilT4Request)
+        public static async Task<string> RwilUpdateLead_RwilTUpdateAsync(JsonElement RwilToken, string RwilTURequest)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://rwil-qa.volkswagenag.com/rwil/gedai/producers/retail/ZAF996-Autoline-DRIVE-DMS-Q/ZAF09002V/serviceleadstatusupdate/created");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://{App.Rwil_host}/{App.Rwil_context}/producers/retail/{App.Rwil_systemid}/{App.Rwil_partnerkey}/serviceleadstatusupdate/created?targetSystem={App.Rwil_targetsystem}");
             request.Headers.Add("Authorization", "Bearer " + RwilToken);
-            var content = new StringContent(RwilT4Request, null, "application/json");
+            var content = new StringContent(RwilTURequest, null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
             Console.WriteLine(response);

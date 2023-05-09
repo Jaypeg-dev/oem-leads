@@ -202,7 +202,7 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
-        public static bool RwilUpdateLead_CheckContactedNotes(string sNotes, ref string sContactType)
+        public static bool RwilUpdateLead_CheckContactedNotes(string sNotes, ref string sContactType,ref string sReason)
         {
             var bResultLoop = false;
             var cancelType = "";
@@ -210,7 +210,7 @@ namespace oemLeads.Queries
             while (!bResultLoop)
             {
                 sContactType = "";
-                if (!RwilUpdateLead_GetDetailsFromNotes(sNotes, ref sContactType, ref cancelType)) break;
+                if (!RwilUpdateLead_GetDetailsFromNotes(sNotes, ref sContactType, ref cancelType, ref sReason)) break;
                 if (sContactType == "") break;
 
                 bResultLoop = true;
@@ -219,7 +219,7 @@ namespace oemLeads.Queries
             return bResultLoop;
         }
 
-        public static bool RwilUpdateLead_GetDetailsFromNotes(string sNotes, ref string sContactType, ref string cancelType, string Delimenator = ",", string fieldSeperator = ":")
+        public static bool RwilUpdateLead_GetDetailsFromNotes(string sNotes, ref string sContactType, ref string cancelType,ref string sReason, string Delimenator = ",", string fieldSeperator = ":")
         {
             var values = sNotes.Split(Delimenator);
             sContactType = "";
@@ -241,6 +241,9 @@ namespace oemLeads.Queries
                     var fieldCancellation = something.Split(fieldSeperator);
                     // Only 3 fields - type description and decision first check decision
                     if (fieldCancellation[2].Trim() == "Y" && fieldCancellation[2].Trim() != "Y/N") cancelType = fieldCancellation[0].Trim();
+                    // Strip out the reason in the []
+                    if (cancelType == "T5_C_21") int Start, End; Start = something.IndexOf('[',1);End = something.IndexOf(']'); sReason = something.Substring(Start,End-Start);
+
                 }
             }
 
@@ -487,12 +490,17 @@ namespace oemLeads.Queries
                 // T5_C_16: Customer not reachable after # contact attempts: Y/N,
                 // T5_C_17: Contact channels no longer valid: Y/N,
                 // T5_C_18: Customer no longer in possesion of vehicle: Y/N
+                // T5_C_19: Duplicate lead: Y/N
+                // T5_C_20: Reject lead: Y/N
+                // T5_C_21: Other reason: Y/N [reason text]
+                // OptionaltText assumed to be the correct place
+
                 var bResultLoop = false;
-                string sContactType = "", cancelType = "";
+                string sContactType = "", cancelType = "", sReason = "";
 
                 while (!bResultLoop)
                 {
-                    RwilUpdateLead_GetDetailsFromNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref cancelType);
+                    RwilUpdateLead_GetDetailsFromNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref cancelType, ref sReason);
                     if (cancelType == "") break;
 
                     var t5c_rwilt5c = new T5C_RwilT5C()
@@ -505,7 +513,7 @@ namespace oemLeads.Queries
                             Timestamp = DateTime.Now,
                             CustomerContactChannel = sContactType,
                             AdditionalReason = "DMS Repair Order Cancelled",
-                            OptionalText = "",
+                            OptionalText = sReason,
                         },
                     };
 

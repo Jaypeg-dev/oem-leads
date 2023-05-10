@@ -25,34 +25,42 @@
         public static string KeyloopLeads_User => RwilLeadsAdaptor_SetKeyloopLeadsUser();
         public static string KeyloopLeads_Password => RwilLeadsAdaptor_SetKeyloopLeadsPassword();
         public static string RwilLeadsAdaptor_SetRwilHost()
+        // location parameter
         {
             return "rwil-qa.volkswagenag.com";
         }
         public static string RwilLeadsAdaptor_SetRwilContext()
+        // location parameter
         {
             return "rwil/gedai";
         }
         public static string RwilLeadsAdaptor_SetRwilClientID()
+        // enterprise config
         {
             return "ZAF996-Autoline-DRIVE-DMS-Q";
         }
         public static string RwilLeadsAdaptor_SetRwilClientSecret()
+        // enterprise config
         {
             return "ghVThqVlpUa83Pmkr2Ghs73yTZ69IyEI2d3g";
         }
         public static string RwilLeadsAdaptor_SetRwilSystemID()
+        // location parameter
         {
             return "ZAF996-Autoline-DRIVE-DMS-Q";
         }
         public static string RwilLeadsAdaptor_SetRwilConsumerName()
+        // location parameter config
         {
             return "ZAF996-Autoline-DRIVE-DMS-Q";
         }
         public static string RwilLeadsAdaptor_SetRwilPartnerKey()
+        // Enterprise config
         {
             return "ZAF09002V";
         }
         public static string RwilLeadsAdaptor_SetRwilTargetSystem()
+        // location parameter
         {
             return "Product_SLI_QA";
         }
@@ -77,22 +85,27 @@
             return "AAtmfq1YLH1HugHs";
         }
         public static string RwilLeadsAdaptor_SetKeyloopLeadsURL()
+        // Enterprise Config
         {
             return "secure2.live-lead.com";
         }
         public static string RwilLeadsAdaptor_SetKeyloopLeadsIntegrationKey()
+        // Enterprise config
         {
             return "05537856-01b2-4f82-9e4e-afd500f002b1";
         }
         public static string RwilLeadsAdaptor_SetKeyloopLeadsDealerCode()
+        // Enterprise Config
         {
             return "octanevwsa";
         }
         public static string RwilLeadsAdaptor_SetKeyloopLeadsUser()
+        // Enterprise Config
         {
             return "keyloopplatform.integration@keyloop.com";
         }
         public static string RwilLeadsAdaptor_SetKeyloopLeadsPassword()
+        // Enterprise Config
         {
             return "qFRy9Ce4hgpCJPcS";
         }

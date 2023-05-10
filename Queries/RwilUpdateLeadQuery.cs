@@ -177,12 +177,13 @@ namespace oemLeads.Queries
         {
             var bResultLoop = false;
             var sContactType = "";
+            var Reason = "";
 
             while (!bResultLoop)
             {
                 // TODO Repair order details notes to check Contacted Customer
                 if (RepairOrderInfo?.Details.Notes == null) break;
-                if (!RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType)) break;
+                if (!RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref Reason)) break;
 
                 var rwilt4 = new RwilT4()
                 {
@@ -242,7 +243,12 @@ namespace oemLeads.Queries
                     // Only 3 fields - type description and decision first check decision
                     if (fieldCancellation[2].Trim() == "Y" && fieldCancellation[2].Trim() != "Y/N") cancelType = fieldCancellation[0].Trim();
                     // Strip out the reason in the []
-                    if (cancelType == "T5_C_21") int Start, End; Start = something.IndexOf('[',1);End = something.IndexOf(']'); sReason = something.Substring(Start,End-Start);
+                    if (cancelType == "T5_C_21")
+                    {
+                        int Start, End;
+                        Start = something.IndexOf('[', 1); End = something.IndexOf(']');
+                        sReason = something.Substring(Start, End - Start);
+                    };
 
                 }
             }
@@ -317,12 +323,13 @@ namespace oemLeads.Queries
         {
             var bResultLoop = false;
             var sContactType = "";
+            var Reason = "";
 
             while (!bResultLoop)
             {
                 // Create routine to loop through job items 
                 if (!RwilUpdateLead_CheckedJobItemsBooked(RepairOrderInfo)) break;
-                RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType);
+                RwilUpdateLead_CheckContactedNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref Reason);
 
                 var t5a_rwilt5a = new T5A_RwilT5A()
                 {

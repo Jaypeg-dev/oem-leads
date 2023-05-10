@@ -136,7 +136,7 @@ namespace oemLeads.Commands.Models
         public string? Unit { get; set; }
 
         [JsonPropertyName("value")]
-        public int? Value { get; set; }
+        public long? Value { get; set; }
     }
 
     public class Names

@@ -136,6 +136,7 @@ namespace oemLeads.Queries
         public static bool RwilProcessSingleLead(string RwilJasonSingleLead, JsonElement RwilToken, JsonElement KeyloopToken, ref string SABAppID, ref string? GedaiServiceLeadID,ref string? sAppDate)
         {
             var bResultLoop = false;
+            var bNotFatelKeepIt = false;
             var RwilLead = JsonSerializer.Deserialize<RwilSingleLead>(RwilJasonSingleLead);
 
             while (!bResultLoop)
@@ -146,7 +147,11 @@ namespace oemLeads.Queries
                 GedaiServiceLeadID = RwilLead?.Payload?.ServiceLeadRecordID;
                 // SAB Method
                 Console.WriteLine("");
-                if (!RwilProcessLead_SAB(RwilLead, ref SABAppID,ref sAppDate, KeyloopToken)) break;
+                if (!RwilProcessLead_SAB(RwilLead, ref SABAppID, ref sAppDate, KeyloopToken))
+                {
+                    bNotFatelKeepIt = true;
+                    break;
+                }
                 // Update Repair Order Notes
                 if (!RwilProcessLead_RepairOrderDetails(SABAppID, KeyloopToken)) break;
                 // T0 Update to Rwil Request
@@ -163,7 +168,7 @@ namespace oemLeads.Queries
                 if (!RwilProcessLead_RwilT3(RwilLead, RwilToken)) break;
                 bResultLoop = true;
             }
-
+            if (bNotFatelKeepIt) bResultLoop = true;
             return bResultLoop;
         }
 
@@ -319,7 +324,7 @@ namespace oemLeads.Queries
                         Mileage = new Mileage()
                         {
                             Unit = RWOdoMeterUnitMeasure,
-                            Value = int.Parse(RWMileage),
+                            Value = long.Parse(RWMileage),
                         },
                     },
                     BookingOption = new BookingOption(),

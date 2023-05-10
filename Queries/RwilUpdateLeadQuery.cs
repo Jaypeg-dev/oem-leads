@@ -242,12 +242,9 @@ namespace oemLeads.Queries
                     var fieldCancellation = something.Split(fieldSeperator);
                     // Only 3 fields - type description and decision first check decision
                     if (fieldCancellation[2].Trim() == "Y" && fieldCancellation[2].Trim() != "Y/N") cancelType = fieldCancellation[0].Trim();
-                    // Strip out the reason in the []
                     if (cancelType == "T5_C_21")
                     {
-                        int Start, End;
-                        Start = something.IndexOf('[', 1); End = something.IndexOf(']');
-                        sReason = something.Substring(Start, End - Start);
+                        sReason = fieldCancellation[1].Trim();
                     };
 
                 }
@@ -503,12 +500,13 @@ namespace oemLeads.Queries
                 // OptionaltText assumed to be the correct place
 
                 var bResultLoop = false;
-                string sContactType = "", cancelType = "", sReason = "";
+            string sContactType = "", cancelType = "", sReason = "";
 
                 while (!bResultLoop)
                 {
                     RwilUpdateLead_GetDetailsFromNotes(RepairOrderInfo?.Details.Notes, ref sContactType, ref cancelType, ref sReason);
                     if (cancelType == "") break;
+                    string stdInfoText = cancelType == "T5_C_21" ? sReason : "DMS Repair Order Cancelled";
 
                     var t5c_rwilt5c = new T5C_RwilT5C()
                     {
@@ -519,7 +517,7 @@ namespace oemLeads.Queries
                             ServiceLeadRecordID = GedaiServiceID,
                             Timestamp = DateTime.Now,
                             CustomerContactChannel = sContactType,
-                            AdditionalReason = "DMS Repair Order Cancelled",
+                            AdditionalReason = stdInfoText,
                             OptionalText = sReason,
                         },
                     };

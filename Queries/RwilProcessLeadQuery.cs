@@ -69,7 +69,7 @@ namespace oemLeads.Queries
         public static bool RwilGetServiceLeads(JsonElement RwilToken, JsonElement KeyloopToken)
         {
             var bResultLoop = false;
-            var bTesting = true;
+            var bTesting = false;
             string sResponse;
 
             while (!bResultLoop)
@@ -376,7 +376,7 @@ namespace oemLeads.Queries
                 // Perform a single loop to reduce process and store info in variables
                 var repairorderdetailsreq = new RepairOrderDetailsReq()
                 {
-                    Notes = "Customer Contacted: Phone/Email,\n T5_C_14: No appointment needed: Y/N,\n T5_C_15: No appointment wanted: Y/N,\n T5_C_16: Customer not reachable after # contact attempts: Y/N,\n T5_C_17: Contact channels no longer valid: Y/N,\n T5_C_18: Customer no longer in possesion of vehicle: Y/N,\n T5_C_19: Duplicate lead: Y/N,\n T5_C_20: Reject lead: Y/N,\n T5_C_21: Other reason: Y/N [reason text]",
+                    Notes = "Customer Contacted: Phone/Email,\n T5_C_14: No appointment needed: Y/N,\n T5_C_15: No appointment wanted: Y/N,\n T5_C_16: Customer not reachable after # contact attempts: Y/N,\n T5_C_17: Contact channels no longer valid: Y/N,\n T5_C_18: Customer no longer in possesion of vehicle: Y/N,\n T5_C_19: Duplicate lead: Y/N,\n T5_C_20: Reject lead: Y/N,\n T5_C_21: Type Other reason: Y/N",
                 };
                 RODReqJsonString = JsonSerializer.Serialize(repairorderdetailsreq);
                 Console.WriteLine(RODReqJsonString);
@@ -712,7 +712,7 @@ namespace oemLeads.Queries
         {
             DateTime dt1 = DateTime.Now;
             DateTime dt2 = dt1.AddHours(1);
-            return dt2.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+            return dt2.ToString("yyyy-MM-ddTHH:mm:ssZ");
         }
         public static DateTime RwilProcessLead_ConvertToTimeZone(string sTimeWithZ)
         {
